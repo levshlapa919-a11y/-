@@ -270,9 +270,9 @@
 
     <!-- СКРИПТ ЛОГИКИ МЕССЕНДЖЕРА -->
     <script>
-        // НАСТРОЙКИ SUPABASE (ЗАМЕНИТЕ НА СВОИ!)
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        // ВАШИ НАСТРОЙКИ SUPABASE ВСТАВЛЕНЫ АВТОМАТИЧЕСКИ
+        const SUPABASE_URL = 'https://dbyuboaxorfudywmlrvi.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_hG8WV5dG4gMpUu7zN4-ntQ_T1dYrFXJ';
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -565,7 +565,6 @@
                     const msg = payload.new;
                     if (currentChat) {
                         if (currentChat.type === 'user' && (msg.sender_id === currentChat.id || msg.receiver_id === currentChat.id)) {
-                            // подтянем профиль отправителя
                             supabaseClient.from('profiles').select('username, avatar_url').eq('id', msg.sender_id).single().then(({data}) => {
                                 msg.profiles = data;
                                 appendMessageUI(msg);
@@ -704,7 +703,7 @@
 
             const checkboxes = document.querySelectorAll('.group-user-checkbox:checked');
             const memberIds = Array.from(checkboxes).map(cb => cb.value);
-            memberIds.push(currentUser.id); // добавляем себя
+            memberIds.push(currentUser.id);
 
             const { data: groupData, error } = await supabaseClient.from('groups').insert([{ name, created_by: currentUser.id }]).select().single();
             if (error) {
