@@ -167,7 +167,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
         <div class="field"><label>Почта</label><input class="input" id="rgEmail" type="email" required></div>
         <div class="field"><label>Пароль (мин. 6)</label><input class="input" id="rgPass" type="password" required minlength="6"></div>
         <div class="field"><label>Юзернейм</label><input class="input" id="rgUser" required maxlength="20"></div>
-        <button type="button" class="btn neon wide" id="rgBtn">Создать </button>
+        <button type="button" class="btn neon wide" id="rgBtn">Создать ⚡</button>
         <div class="form-err" id="rgErr"></div><div class="form-ok" id="rgOk"></div>
       </form>
     </div>
@@ -198,7 +198,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
   <aside class="sidebar">
     <div class="sb-head">
       <div class="logo">G<b>◆</b>LDA</div><div class="spacer"></div>
-      <button type="button" class="ibtn" id="btnProfile"></button>
+      <button type="button" class="ibtn" id="btnProfile">👤</button>
       <button type="button" class="ibtn hidden" id="btnAdmin">🛡️</button>
       <button type="button" class="ibtn" id="btnLogout">🚪</button>
     </div>
@@ -206,7 +206,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
       <button type="button" class="btn" id="btnNewChat">💬 Новый чат</button>
       <button type="button" class="btn" id="btnNewGroup">👥 Группа</button>
     </div>
-    <div style="padding:0 14px 8px"><input class="input" id="sbSearch" placeholder=" Поиск…"></div>
+    <div style="padding:0 14px 8px"><input class="input" id="sbSearch" placeholder="🔎 Поиск…"></div>
     <div class="sb-label">Чаты</div>
     <div class="chat-list" id="chatList"></div>
     <div class="my-card" id="myCard">
@@ -315,6 +315,7 @@ function enterApp(){
   $('#btnAdmin').classList.toggle('hidden',myProfile.role!=='admin');
   $('#myAva').innerHTML=`<div class="ava" style="width:40px;height:40px;background:#134d2e;color:#33ff8a">${esc((myProfile.display_name||myProfile.username).charAt(0).toUpperCase())}</div>`;
   $('#myName').textContent=myProfile.display_name||myProfile.username;
+  userCache.set(me.id, myProfile);
   loadChats();
 }
 
@@ -331,7 +332,6 @@ async function loadChats(){
       return;
     }
 
-    // Загружаем чаты с участниками
     const { data: rows, error: chatErr } = await sb
       .from('chats')
       .select('id, type, name, members:chat_members(user_id, profiles(id, username, display_name))')
@@ -430,11 +430,14 @@ function renderMessages(){
   
   currentMessages.forEach(m => {
     const mine = m.sender_id === me.id;
+    const sender = userCache.get(m.sender_id);
+    const senderName = sender ? (sender.display_name || sender.username) : 'Неизвестно';
+    
     const div = document.createElement('div');
     div.className = `msg-row ${mine ? 'mine' : 'theirs'}`;
     div.innerHTML = `
       <div class="bubble">
-        ${!mine ? `<div class="m-sender">@${esc(myProfile.username)}</div>` : ''}
+        ${!mine ? `<div class="m-sender">@${esc(senderName)}</div>` : ''}
         <div class="m-text">${esc(m.text || '[пусто]')}</div>
         <div class="m-time">${fmtTime(m.created_at)}</div>
       </div>
