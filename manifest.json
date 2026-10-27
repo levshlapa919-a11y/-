@@ -1,0 +1,10 @@
+{
+  "name": "GOLDA MESSENGER",
+  "short_name": "GOLDA",
+  "description": "Безопасный мессенджер в реальном времени",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04080a",
+  "theme_color": "#33ff8a"
+}
