@@ -157,7 +157,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ (с кнопкой выхода) -->
     <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-md mx-4 relative">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -174,6 +174,11 @@
                 <div><label class="block text-xs text-neon mb-1">Юзернейм</label><input type="text" id="edit-username" class="w-full bg-darkBg text-gray-100 px-3 py-2 rounded-lg neon-border text-sm"></div>
                 <div><label class="block text-xs text-neon mb-1">О себе</label><textarea id="edit-bio" rows="3" class="w-full bg-darkBg text-gray-100 px-3 py-2 rounded-lg neon-border text-sm"></textarea></div>
                 <button onclick="saveProfile()" class="w-full bg-neon text-darkBg font-bold py-2.5 rounded-xl hover:bg-neonDark transition">Сохранить</button>
+                
+                <!-- КНОПКА ВЫХОДА ИЗ АККАУНТА В ПРОФИЛЕ -->
+                <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 bg-red-950/30 text-red-400 border border-red-900/50 py-2.5 rounded-xl hover:bg-red-900/40 transition text-sm font-bold">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Выйти из аккаунта</span>
+                </button>
             </div>
         </div>
     </div>
@@ -283,7 +288,6 @@
         // Автоматическое создание и добавление в официальный канал «golda messenger new»
         async function ensureOfficialChannel() {
             const channelName = 'golda messenger new';
-            // Проверяем, существует ли канал
             let { data: channel } = await supabaseClient.from('groups').select('*').eq('name', channelName).single();
             
             if (!channel) {
@@ -292,7 +296,6 @@
             }
 
             if (channel) {
-                // Проверяем, состоит ли юзер в канале
                 const { data: membership } = await supabaseClient.from('group_members').select('*').eq('group_id', channel.id).eq('user_id', currentUser.id).single();
                 if (!membership) {
                     await supabaseClient.from('group_members').insert([{ group_id: channel.id, user_id: currentUser.id }]);
@@ -366,7 +369,13 @@
             }
         }
 
-        async function logout() { if (currentUser) await updateStatus('offline'); await supabaseClient.auth.signOut(); location.reload(); }
+        // ФУНКЦИЯ ВЫХОДА ИЗ АККАУНТА
+        async function logout() { 
+            if (currentUser) await updateStatus('offline'); 
+            await supabaseClient.auth.signOut(); 
+            location.reload(); 
+        }
+
         async function updateStatus(status) { if (!currentUser) return; await supabaseClient.from('profiles').update({ status }).eq('id', currentUser.id); }
 
         async function loadAppData() {
@@ -449,10 +458,9 @@
                 verifiedBadge.classList.add('hidden');
             }
 
-            // Если это канал «golda messenger new», писать туда могут только админы
             const messageForm = document.getElementById('message-form');
             if (chatInfo.name === 'golda messenger new' && userProfile.role !== 'admin') {
-                messageForm.style.display = 'none'; // Обычные пользователи могут только читать
+                messageForm.style.display = 'none';
             } else {
                 messageForm.style.display = 'flex';
             }
@@ -613,7 +621,6 @@
             }
         }
 
-        // АДМИН ПАНЕЛЬ С УПРАВЛЕНИЕМ ВЕРИФИКАЦИЕЙ
         async function openAdminPanel() {
             const { data: users } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('admin-users-table');
