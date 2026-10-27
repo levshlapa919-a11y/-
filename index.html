@@ -233,20 +233,28 @@
         let tempNewAvatarBase64 = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                await fetchOrCreateMyProfile();
-                if (userProfile?.is_banned) {
-                    alert('Ваш аккаунт заблокирован.');
-                    await supabaseClient.auth.signOut();
-                    location.reload();
-                    return;
+            console.log('Страница загружена');
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    console.log('Сессия найдена:', session.user.id);
+                    currentUser = session.user;
+                    await fetchOrCreateMyProfile();
+                    if (userProfile?.is_banned) {
+                        alert('Ваш аккаунт заблокирован.');
+                        await supabaseClient.auth.signOut();
+                        location.reload();
+                        return;
+                    }
+                    await ensureOfficialChannel();
+                    showApp();
+                } else {
+                    console.log('Сессии нет, показываем авторизацию');
+                    showAuth();
                 }
-                await ensureOfficialChannel();
-                showApp();
-            } else {
-                showAuth();
+            } catch (err) {
+                console.error('Ошибка при загрузке:', err);
+                alert('Ошибка загрузки: ' + err.message);
             }
         });
 
@@ -304,19 +312,34 @@
             document.getElementById('auth-btn').textContent = isSignUpMode ? 'Зарегистрироваться' : 'Войти';
             document.getElementById('auth-toggle-btn').textContent = isSignUpMode ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться';
             document.getElementById('username-field').classList.toggle('hidden', !isSignUpMode);
+            console.log('Режим авторизации:', isSignUpMode ? 'регистрация' : 'вход');
         }
 
         async function handleAuth(e) {
             e.preventDefault();
-            const email = document.getElementById('email-input').value;
+            console.log('handleAuth вызван');
+            
+            const email = document.getElementById('email-input').value.trim();
             const password = document.getElementById('password-input').value;
+
+            console.log('Email:', email, 'Пароль:', password ? '***' : 'пусто');
+
+            if (!email || !password) {
+                alert('Введите email и пароль!');
+                return;
+            }
 
             if (isSignUpMode) {
                 const username = document.getElementById('username-input').value.trim();
                 if (!username) { alert('Введите юзернейм!'); return; }
 
+                console.log('Регистрация:', email, username);
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) { alert('Ошибка регистрации: ' + error.message); return; }
+                if (error) { 
+                    console.error('Ошибка регистрации:', error);
+                    alert('Ошибка регистрации: ' + error.message); 
+                    return; 
+                }
 
                 currentUser = data.user;
                 if (currentUser) {
@@ -338,8 +361,14 @@
                 alert('Регистрация успешна!');
                 location.reload();
             } else {
+                console.log('Вход:', email);
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) { alert('Ошибка входа: Неверная почта или пароль'); return; }
+                if (error) { 
+                    console.error('Ошибка входа:', error);
+                    alert('Ошибка входа: ' + error.message); 
+                    return; 
+                }
+                console.log('Вход успешен:', data);
                 location.reload();
             }
         }
@@ -537,7 +566,6 @@
             }
             
             if (data) {
-                // Загружаем профили отдельно, чтобы не зависеть от JOIN
                 const senderIds = [...new Set(data.map(m => m.sender_id))];
                 const { data: profiles } = await supabaseClient.from('profiles').select('id, username, avatar_url, is_verified').in('id', senderIds);
                 const profilesMap = {};
@@ -589,11 +617,10 @@
             
             if (error) {
                 console.error("Ошибка отправки:", error);
-                alert('❌ Ошибка отправки: ' + error.message + '\n\nПроверь, что выполнил SQL из инструкции!');
+                alert('❌ Ошибка отправки: ' + error.message);
             } else {
                 console.log("Сообщение отправлено:", data);
                 input.value = '';
-                // Добавляем сообщение сразу в UI
                 if (data && data[0]) {
                     data[0].profiles = { username: userProfile.username, avatar_url: userProfile.avatar_url, is_verified: userProfile.is_verified };
                     appendMessageUI(data[0]);
