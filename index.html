@@ -85,10 +85,11 @@
                             <span class="text-xs text-gray-400">В сети</span>
                         </div>
                     </div>
-                    <div class="flex space-x-2">
+                    <div class="flex space-x-1 items-center">
+                        <!-- Кнопка админ панели (видна только админу) -->
+                        <button id="admin-panel-btn" onclick="openAdminPanel()" title="Админ панель" class="hidden text-neon hover:text-white p-2 transition"><i class="fa-solid fa-shield-halved text-lg"></i></button>
                         <button onclick="openGroupModal()" title="Создать группу" class="text-gray-400 hover:text-neon p-2 transition"><i class="fa-solid fa-users-rectangle text-lg"></i></button>
                         <button onclick="openProfileModal()" title="Профиль" class="text-gray-400 hover:text-neon p-2 transition"><i class="fa-solid fa-gear text-lg"></i></button>
-                        <button id="admin-panel-btn" onclick="openAdminPanel()" title="Админ панель" class="hidden text-neon hover:text-white p-2 transition"><i class="fa-solid fa-shield-halved text-lg"></i></button>
                     </div>
                 </div>
 
@@ -185,11 +186,12 @@
         </div>
     </div>
 
+    <!-- АДМИН ПАНЕЛЬ С КНОПКОЙ ЗАКРЫТИЯ -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-4xl mx-4 relative max-h-[85vh] flex flex-col">
-            <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
             <h2 class="text-2xl font-bold text-neon mb-4">Админ панель</h2>
-            <div class="overflow-y-auto flex-1 neon-border rounded-xl">
+            <div class="overflow-y-auto flex-1 neon-border rounded-xl mb-4">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-darkBg text-neon text-xs uppercase border-b border-gray-800">
@@ -199,6 +201,7 @@
                     <tbody id="admin-users-table" class="text-sm divide-y divide-gray-800"></tbody>
                 </table>
             </div>
+            <button onclick="closeAdminPanel()" class="w-full bg-cardBg hover:bg-darkBg text-gray-300 font-bold py-3 rounded-xl border border-gray-700 transition">Закрыть</button>
         </div>
     </div>
 
@@ -233,13 +236,20 @@
         });
 
         function showAuth() { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); }
+        
         function showApp() {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
             document.getElementById('app-screen').classList.add('flex');
             document.getElementById('my-avatar').src = userProfile.avatar_url || '';
             document.getElementById('my-username').textContent = '@' + userProfile.username;
-            if (userProfile.role === 'admin') document.getElementById('admin-panel-btn').classList.remove('hidden');
+            
+            // Проверка прав администратора (регистронезависимая)
+            const emailLower = (currentUser.email || '').toLowerCase();
+            if (userProfile.role === 'admin' || emailLower === 'levshlapa919@gmail.com') {
+                document.getElementById('admin-panel-btn').classList.remove('hidden');
+            }
+
             updateStatus('online');
             loadAppData();
             setupRealtime();
@@ -266,7 +276,7 @@
 
                 currentUser = data.user;
                 if (currentUser) {
-                    const role = (email === 'Levshlapa919@gmail.com') ? 'admin' : 'user';
+                    const role = (email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
                     await supabaseClient.from('profiles').upsert([{
                         id: currentUser.id,
                         username: username,
@@ -285,8 +295,9 @@
 
         async function fetchOrCreateMyProfile() {
             let { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
+            const role = (currentUser.email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
+            
             if (!data) {
-                const role = (currentUser.email === 'Levshlapa919@gmail.com') ? 'admin' : 'user';
                 const defaultUsername = currentUser.email.split('@')[0];
                 const { data: newProf } = await supabaseClient.from('profiles').upsert([{
                     id: currentUser.id,
@@ -297,6 +308,11 @@
                 userProfile = newProf;
             } else {
                 userProfile = data;
+                // Принудительно обновляем роль администратора, если это ваша почта
+                if (role === 'admin' && userProfile.role !== 'admin') {
+                    await supabaseClient.from('profiles').update({ role: 'admin' }).eq('id', currentUser.id);
+                    userProfile.role = 'admin';
+                }
             }
         }
 
