@@ -98,6 +98,43 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
 .comp-row textarea{flex:1;max-height:110px;font-size:15px}
 .send-btn{width:46px;height:46px;border-radius:14px;border:0;background:linear-gradient(135deg,#3dffa0,#1fd468);color:#04140b;font-size:19px;cursor:pointer;flex-shrink:0}
 .send-btn:disabled{opacity:.35}
+.overlay{position:fixed;inset:0;background:rgba(2,6,4,.75);backdrop-filter:blur(6px);z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.modal{width:min(460px,100%);max-height:90dvh;overflow-y:auto;padding:22px;position:relative}
+.mclose{position:absolute;top:12px;right:12px}
+.mtitle{font-family:'Unbounded';font-size:17px;font-weight:800;margin-bottom:14px;padding-right:40px}
+.mlist{margin-top:10px;display:flex;flex-direction:column;gap:3px;max-height:340px;overflow-y:auto}
+.mrow{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:11px;cursor:pointer}
+.mrow:active{background:#0e2417}
+.mrow .u{font-weight:800;font-size:13.5px}
+.mrow .s{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut)}
+.pmodal{text-align:center}
+.pava{position:relative;width:fit-content;margin:4px auto 10px}
+.pava.edit{cursor:pointer}
+.avaHint{position:absolute;inset:0;border-radius:50%;background:rgba(3,10,6,.6);display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;font-weight:700}
+.pava.edit:active .avaHint{opacity:1}
+.pstat{position:absolute;right:2px;bottom:4px;width:14px;height:14px;border-radius:50%;border:3px solid #0a1611;background:#3a5a4a}
+.pstat.on{background:var(--neon)}
+.pmodal h2{font-family:'Unbounded';font-size:18px}
+.puser{font-family:'JetBrains Mono';color:var(--neon);font-size:12.5px;margin:2px 0}
+.pstatus{font-family:'JetBrains Mono';font-size:11px;color:var(--mut);margin-bottom:8px}
+.pabout{background:#07130c;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0;font-size:13.5px;text-align:left}
+.pmeta{font-size:10.5px;color:var(--mut);margin:8px 0}
+.pbtns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.pmodal .field{text-align:left}
+.arow{display:flex;gap:8px;align-items:center;padding:9px;border-radius:11px;margin-bottom:5px;background:#08140d}
+.ainfo{flex:1;min-width:0}
+.aname{font-weight:800;font-size:13.5px}
+.amail{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-on{color:var(--neon)}.st-off{color:var(--mut)}
+.chip{font:600 9px 'JetBrains Mono';padding:2px 6px;border-radius:5px;vertical-align:2px;margin-left:3px}
+.chip.adm{background:rgba(186,255,62,.15);color:var(--neon2);border:1px solid rgba(186,255,62,.4)}
+.chip.mut{background:rgba(255,200,60,.12);color:#ffd35c}
+.chip.ban{background:rgba(255,84,112,.12);color:#ff8ba0}
+.abtns{display:flex;gap:4px;flex-shrink:0}
+.hrow{display:flex;gap:8px;align-items:center;padding:9px;border-radius:10px;background:#08140d;margin-bottom:4px;font-size:13px;flex-wrap:wrap}
+.htime{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);width:110px}
+.ban-big{font-family:'Unbounded';font-weight:900;font-size:clamp(24px,7vw,40px);color:var(--danger);text-shadow:0 0 30px rgba(255,84,112,.5);margin-bottom:12px;animation:flick 3s infinite}
 .toast-wrap{position:fixed;left:14px;right:14px;bottom:14px;z-index:100;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 .toast{background:#0b1d13;border:1px solid var(--neon);color:var(--txt);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13px;max-width:100%;pointer-events:auto;animation:slideIn .3s}
 @keyframes slideIn{from{transform:translateY(30px);opacity:0}}
@@ -130,7 +167,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
         <div class="field"><label>Почта</label><input class="input" id="rgEmail" type="email" required></div>
         <div class="field"><label>Пароль (мин. 6)</label><input class="input" id="rgPass" type="password" required minlength="6"></div>
         <div class="field"><label>Юзернейм</label><input class="input" id="rgUser" required maxlength="20"></div>
-        <button type="button" class="btn neon wide" id="rgBtn">Создать ⚡</button>
+        <button type="button" class="btn neon wide" id="rgBtn">Создать </button>
         <div class="form-err" id="rgErr"></div><div class="form-ok" id="rgOk"></div>
       </form>
     </div>
@@ -161,7 +198,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
   <aside class="sidebar">
     <div class="sb-head">
       <div class="logo">G<b>◆</b>LDA</div><div class="spacer"></div>
-      <button type="button" class="ibtn" id="btnProfile">👤</button>
+      <button type="button" class="ibtn" id="btnProfile"></button>
       <button type="button" class="ibtn hidden" id="btnAdmin">🛡️</button>
       <button type="button" class="ibtn" id="btnLogout">🚪</button>
     </div>
@@ -169,7 +206,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
       <button type="button" class="btn" id="btnNewChat">💬 Новый чат</button>
       <button type="button" class="btn" id="btnNewGroup">👥 Группа</button>
     </div>
-    <div style="padding:0 14px 8px"><input class="input" id="sbSearch" placeholder="🔎 Поиск…"></div>
+    <div style="padding:0 14px 8px"><input class="input" id="sbSearch" placeholder=" Поиск…"></div>
     <div class="sb-label">Чаты</div>
     <div class="chat-list" id="chatList"></div>
     <div class="my-card" id="myCard">
@@ -201,9 +238,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
 <div class="toast-wrap" id="toastRoot"></div>
 
 <script>
-// ПЕРЕХВАТ ВСЕХ ОШИБОК
-window.onerror = function(message, source, lineno, colno, error) {
-  alert('❌ ОШИБКА В КОДЕ:\n' + message + '\n\nСтрока: ' + lineno);
+window.onerror = function(message, source, lineno) {
+  alert('❌ ОШИБКА:\n' + message + '\nСтрока: ' + lineno);
   return true;
 };
 
@@ -218,7 +254,7 @@ function toast(msg,type='ok'){const t=document.createElement('div');t.className=
 const ruErr=m=>/invalid login/i.test(m)?'Неверная почта или пароль':/already registered/i.test(m)?'Почта занята':/username.*unique|duplicate/i.test(m)?'Юзернейм занят':/at least 6/i.test(m)?'Пароль мин. 6 символов':m;
 const validUname=u=>/^[a-zA-Z0-9_]{3,20}$/.test(u);
 
-let me=null, myProfile=null, bootedFor=null, chats=[], currentChat=null, currentMessages=[];
+let me=null, myProfile=null, bootedFor=null, chats=[], currentChat=null, currentMessages=[], userCache=new Map();
 
 function showScreen(id){['authScreen','nameScreen','banScreen'].forEach(s=>$('#'+s).classList.toggle('hidden',s!==id));$('#app').classList.add('hidden');}
 
@@ -238,7 +274,7 @@ $('#liBtn').onclick=async()=>{
 $('#rgBtn').onclick=async()=>{
   $('#rgErr').textContent='';$('#rgOk').textContent='';
   const email=$('#rgEmail').value.trim(), pass=$('#rgPass').value, uname=$('#rgUser').value.trim().toLowerCase();
-  if(!validUname(uname))return $('#rgErr').textContent='Юзернейм: 3–20 символов, латиница/цифры/_';
+  if(!validUname(uname))return $('#rgErr').textContent='Юзернейм: 3–20 символов';
   $('#rgBtn').disabled=true;
   sessionStorage.setItem('golda_uname',uname);
   const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:uname}}});
@@ -282,13 +318,11 @@ function enterApp(){
   loadChats();
 }
 
-// МАКСИМАЛЬНО ПРОСТОЙ И ЗАЩИЩЁННЫЙ ЗАГРУЗЧИК ЧАТОВ
 async function loadChats(){
   try {
     if(!me) return;
-    // 1. Получаем ID чатов
     const { data: mem, error: memErr } = await sb.from('chat_members').select('chat_id').eq('user_id', me.id);
-    if(memErr) { alert('Ошибка загрузки участников: ' + memErr.message); return; }
+    if(memErr) { alert('Ошибка: ' + memErr.message); return; }
     
     const ids = (mem || []).map(r => r.chat_id);
     if(ids.length === 0){
@@ -297,39 +331,49 @@ async function loadChats(){
       return;
     }
 
-    // 2. Получаем информацию о чатах (без сложных джоинов)
-    const { data: rows, error: chatErr } = await sb.from('chats').select('id, type, name, created_by').in('id', ids);
-    if(chatErr) { alert('Ошибка загрузки чатов: ' + chatErr.message); return; }
+    // Загружаем чаты с участниками
+    const { data: rows, error: chatErr } = await sb
+      .from('chats')
+      .select('id, type, name, members:chat_members(user_id, profiles(id, username, display_name))')
+      .in('id', ids);
+    
+    if(chatErr) { alert('Ошибка чатов: ' + chatErr.message); return; }
 
-    chats = (rows || []).map(r => ({
-      id: r.id,
-      type: r.type,
-      name: r.name,
-      created_by: r.created_by
-    }));
+    chats = (rows || []).map(r => {
+      const members = (r.members || []).map(m => m.profiles).filter(Boolean);
+      members.forEach(p => userCache.set(p.id, p));
+      const peer = r.type === 'direct' ? members.find(p => p.id !== me.id) : null;
+      return { ...r, members, peer };
+    });
 
     renderChatList();
   } catch (err) {
-    alert('Критическая ошибка в loadChats:\n' + err.message);
+    alert('Критическая ошибка:\n' + err.message);
   }
+}
+
+function chatTitle(c){
+  if(c.type === 'direct' && c.peer) return c.peer.display_name || c.peer.username || 'Личный чат';
+  return c.name || 'Группа';
 }
 
 function renderChatList(){
   try {
     const q = ($('#sbSearch').value || '').toLowerCase();
-    const list = chats.filter(c => (c.name || 'Личный чат').toLowerCase().includes(q));
+    const list = chats.filter(c => chatTitle(c).toLowerCase().includes(q));
     
     if(list.length === 0){
-      $('#chatList').innerHTML = '<div class="dim" style="text-align:center;padding:30px 10px;font-size:13px">Чаты не найдены</div>';
+      $('#chatList').innerHTML = '<div class="dim" style="text-align:center;padding:30px 10px">Чаты не найдены</div>';
       return;
     }
 
     $('#chatList').innerHTML = list.map(c => {
       const active = currentChat && currentChat.id === c.id;
-      const title = c.type === 'direct' ? 'Личный чат' : (c.name || 'Группа');
+      const title = chatTitle(c);
+      const initial = title.charAt(0).toUpperCase();
       
       return `<div class="chat-item ${active ? 'active' : ''}" data-chat="${c.id}">
-        <div class="ava grp" style="width:46px;height:46px;font-size:19px">${esc(title.charAt(0).toUpperCase())}</div>
+        <div class="ava grp" style="width:46px;height:46px;font-size:19px">${esc(initial)}</div>
         <div class="ci-body">
           <div class="ci-top"><span class="ci-name">${esc(title)}</span></div>
           <div class="ci-prev">Нажми, чтобы открыть</div>
@@ -337,7 +381,7 @@ function renderChatList(){
       </div>`;
     }).join('');
   } catch (err) {
-    alert('Ошибка в renderChatList:\n' + err.message);
+    alert('Ошибка списка:\n' + err.message);
   }
 }
 
@@ -359,31 +403,30 @@ async function openChat(chatId){
     cv.style.display = 'flex';
     $('#app').classList.add('chat-open');
     
-    $('#chName').textContent = c.type === 'direct' ? 'Личный чат' : (c.name || 'Группа');
-    $('#chStatus').textContent = 'Загрузка сообщений...';
+    $('#chName').textContent = chatTitle(c);
+    $('#chStatus').textContent = 'Загрузка...';
     
-    // Простой запрос сообщений
     const { data: msgs, error: msgErr } = await sb.from('messages')
       .select('id, text, sender_id, created_at')
       .eq('chat_id', chatId)
       .order('created_at', { ascending: true });
     
     if(msgErr) {
-      alert('Ошибка загрузки сообщений: ' + msgErr.message);
+      alert('Ошибка сообщений: ' + msgErr.message);
       return;
     }
     
     currentMessages = msgs || [];
     renderMessages();
   } catch (err) {
-    alert('Ошибка в openChat:\n' + err.message);
+    alert('Ошибка чата:\n' + err.message);
   }
 }
 
 function renderMessages(){
   const box = $('#msgList');
   box.innerHTML = '';
-  $('#chStatus').textContent = currentMessages.length + ' сообщений';
+  $('#chStatus').textContent = currentMessages.length + ' сообщ.';
   
   currentMessages.forEach(m => {
     const mine = m.sender_id === me.id;
@@ -392,7 +435,7 @@ function renderMessages(){
     div.innerHTML = `
       <div class="bubble">
         ${!mine ? `<div class="m-sender">@${esc(myProfile.username)}</div>` : ''}
-        <div class="m-text">${esc(m.text || '[пустое сообщение]')}</div>
+        <div class="m-text">${esc(m.text || '[пусто]')}</div>
         <div class="m-time">${fmtTime(m.created_at)}</div>
       </div>
     `;
@@ -423,9 +466,8 @@ async function sendMessage(){
   });
   
   if(error) {
-    toast('Не удалось отправить: ' + error.message, 'err');
+    toast('Ошибка: ' + error.message, 'err');
   } else {
-    // Перезагружаем сообщения чата
     openChat(currentChat.id);
   }
 }
