@@ -30,9 +30,29 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0f0d; }
         ::-webkit-scrollbar-thumb { background: #00ff6655; border-radius: 3px; }
+        #debug-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.9);
+            color: #00ff66;
+            font-size: 11px;
+            padding: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 9999;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body class="bg-darkBg text-gray-100 h-screen flex flex-col overflow-hidden font-sans">
+
+    <!-- Панель диагностики -->
+    <div id="debug-panel" class="hidden">
+        <div class="font-bold mb-1">🔍 ДИАГНОСТИКА:</div>
+        <div id="debug-log"></div>
+    </div>
 
     <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-darkBg/95 backdrop-blur-md">
         <div class="bg-panelBg p-8 rounded-2xl neon-border neon-glow w-full max-w-md mx-4">
@@ -41,7 +61,7 @@
                 <p class="text-gray-400 text-sm mt-1">Неоновый защищенный мессенджер</p>
             </div>
 
-            <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+            <form id="auth-form" class="space-y-4">
                 <div id="username-field" class="hidden">
                     <label class="block text-xs uppercase tracking-wider text-neon mb-1">Юзернейм</label>
                     <input type="text" id="username-input" placeholder="например: gold_user" class="w-full bg-darkBg text-gray-100 px-4 py-3 rounded-xl neon-border">
@@ -139,7 +159,7 @@
 
                 <div id="messages-list" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
 
-                <form id="message-form" onsubmit="sendMessage(event)" class="p-4 bg-panelBg border-t border-gray-800 flex items-center space-x-3">
+                <form id="message-form" class="p-4 bg-panelBg border-t border-gray-800 flex items-center space-x-3">
                     <input type="text" id="message-input" autocomplete="off" placeholder="Напишите сообщение..." class="flex-1 bg-darkBg text-gray-100 px-4 py-3 rounded-xl neon-border">
                     <button type="submit" class="bg-neon text-darkBg px-5 py-3 rounded-xl font-bold hover:bg-neonDark transition shadow-lg shadow-neon/20">
                         <i class="fa-solid fa-paper-plane"></i>
@@ -219,6 +239,15 @@
     </div>
 
     <script>
+        // Диагностика
+        function debug(msg) {
+            const panel = document.getElementById('debug-panel');
+            const log = document.getElementById('debug-log');
+            panel.classList.remove('hidden');
+            log.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
         const SUPABASE_URL = 'https://dbyuboaxorfudywmlrvi.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_hG8WV5dG4gMpUu7zN4-ntQ_T1dYrFXJ';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -233,11 +262,11 @@
         let tempNewAvatarBase64 = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
-            console.log('Страница загружена');
+            debug('Страница загружена');
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
-                    console.log('Сессия найдена:', session.user.id);
+                    debug('Сессия найдена');
                     currentUser = session.user;
                     await fetchOrCreateMyProfile();
                     if (userProfile?.is_banned) {
@@ -249,12 +278,12 @@
                     await ensureOfficialChannel();
                     showApp();
                 } else {
-                    console.log('Сессии нет, показываем авторизацию');
+                    debug('Сессии нет');
                     showAuth();
                 }
             } catch (err) {
-                console.error('Ошибка при загрузке:', err);
-                alert('Ошибка загрузки: ' + err.message);
+                debug('ОШИБКА: ' + err.message);
+                alert('Ошибка: ' + err.message);
             }
         });
 
@@ -312,17 +341,18 @@
             document.getElementById('auth-btn').textContent = isSignUpMode ? 'Зарегистрироваться' : 'Войти';
             document.getElementById('auth-toggle-btn').textContent = isSignUpMode ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться';
             document.getElementById('username-field').classList.toggle('hidden', !isSignUpMode);
-            console.log('Режим авторизации:', isSignUpMode ? 'регистрация' : 'вход');
+            debug('Режим: ' + (isSignUpMode ? 'регистрация' : 'вход'));
         }
 
-        async function handleAuth(e) {
+        // Обработчик формы
+        document.getElementById('auth-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('handleAuth вызван');
+            debug('Форма отправлена');
             
             const email = document.getElementById('email-input').value.trim();
             const password = document.getElementById('password-input').value;
 
-            console.log('Email:', email, 'Пароль:', password ? '***' : 'пусто');
+            debug('Email: ' + email);
 
             if (!email || !password) {
                 alert('Введите email и пароль!');
@@ -333,45 +363,57 @@
                 const username = document.getElementById('username-input').value.trim();
                 if (!username) { alert('Введите юзернейм!'); return; }
 
-                console.log('Регистрация:', email, username);
-                const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) { 
-                    console.error('Ошибка регистрации:', error);
-                    alert('Ошибка регистрации: ' + error.message); 
-                    return; 
-                }
-
-                currentUser = data.user;
-                if (currentUser) {
-                    const role = (email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
-                    const is_verified = (email.toLowerCase() === 'levshlapa919@gmail.com');
-                    
-                    const { error: upsertError } = await supabaseClient.from('profiles').upsert({
-                        id: currentUser.id,
-                        username: username,
-                        email: email,
-                        role: role,
-                        is_verified: is_verified
-                    });
-                    
-                    if (upsertError) {
-                        console.warn("Не удалось сохранить профиль:", upsertError);
+                debug('Регистрация...');
+                try {
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                    if (error) { 
+                        debug('Ошибка регистрации: ' + error.message);
+                        alert('Ошибка: ' + error.message); 
+                        return; 
                     }
+
+                    currentUser = data.user;
+                    if (currentUser) {
+                        const role = (email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
+                        const is_verified = (email.toLowerCase() === 'levshlapa919@gmail.com');
+                        
+                        const { error: upsertError } = await supabaseClient.from('profiles').upsert({
+                            id: currentUser.id,
+                            username: username,
+                            email: email,
+                            role: role,
+                            is_verified: is_verified
+                        });
+                        
+                        if (upsertError) {
+                            debug('Ошибка профиля: ' + upsertError.message);
+                        } else {
+                            debug('Профиль создан');
+                        }
+                    }
+                    alert('Регистрация успешна!');
+                    location.reload();
+                } catch (err) {
+                    debug('Исключение: ' + err.message);
+                    alert('Ошибка: ' + err.message);
                 }
-                alert('Регистрация успешна!');
-                location.reload();
             } else {
-                console.log('Вход:', email);
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) { 
-                    console.error('Ошибка входа:', error);
-                    alert('Ошибка входа: ' + error.message); 
-                    return; 
+                debug('Вход...');
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) { 
+                        debug('Ошибка входа: ' + error.message);
+                        alert('Ошибка входа: ' + error.message); 
+                        return; 
+                    }
+                    debug('Вход успешен');
+                    location.reload();
+                } catch (err) {
+                    debug('Исключение: ' + err.message);
+                    alert('Ошибка: ' + err.message);
                 }
-                console.log('Вход успешен:', data);
-                location.reload();
             }
-        }
+        });
 
         async function fetchOrCreateMyProfile() {
             let { data, error: fetchError } = await supabaseClient
@@ -401,7 +443,7 @@
                     .single();
                 
                 if (insertError) {
-                    console.error("Ошибка БД:", insertError);
+                    debug("Ошибка БД: " + insertError.message);
                     userProfile = {
                         id: currentUser.id,
                         username: defaultUsername,
@@ -560,8 +602,8 @@
             const { data, error } = await query;
             
             if (error) {
-                console.error("Ошибка загрузки сообщений:", error);
-                messagesList.innerHTML = `<div class="text-center text-red-400 p-4">Ошибка загрузки: ${error.message}</div>`;
+                debug("Ошибка загрузки: " + error.message);
+                messagesList.innerHTML = `<div class="text-center text-red-400 p-4">Ошибка: ${error.message}</div>`;
                 return;
             }
             
@@ -596,7 +638,7 @@
             messagesList.scrollTop = messagesList.scrollHeight;
         }
 
-        async function sendMessage(e) {
+        document.getElementById('message-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             const input = document.getElementById('message-input');
             const content = input.value.trim();
@@ -611,22 +653,22 @@
             if (currentChat.type === 'user') payload.receiver_id = currentChat.id;
             else payload.group_id = currentChat.id;
             
-            console.log("Отправка сообщения:", payload);
+            debug("Отправка: " + content);
             
             const { data, error } = await supabaseClient.from('messages').insert([payload]).select();
             
             if (error) {
-                console.error("Ошибка отправки:", error);
-                alert('❌ Ошибка отправки: ' + error.message);
+                debug("Ошибка: " + error.message);
+                alert('Ошибка: ' + error.message);
             } else {
-                console.log("Сообщение отправлено:", data);
+                debug("Отправлено!");
                 input.value = '';
                 if (data && data[0]) {
                     data[0].profiles = { username: userProfile.username, avatar_url: userProfile.avatar_url, is_verified: userProfile.is_verified };
                     appendMessageUI(data[0]);
                 }
             }
-        }
+        });
 
         function setupRealtime() {
             if (messagesSubscription) supabaseClient.removeChannel(messagesSubscription);
