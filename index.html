@@ -78,15 +78,12 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
 .ch-name{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ch-status{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut)}
 .ch-status.on{color:var(--neon)}
-.ch-status.typing{color:var(--neon2)}
 .stack{display:flex;padding-left:4px}
 .stack .ava{margin-left:-8px;border:2px solid #07130c}
 .dots-menu{position:fixed;top:60px;right:14px;z-index:80;background:#0b1a12;border:1px solid var(--line);border-radius:14px;padding:6px;min-width:220px;box-shadow:0 18px 50px rgba(0,0,0,.6)}
 .dots-menu button{display:flex;width:100%;gap:10px;align-items:center;padding:10px 12px;border:0;background:none;color:var(--txt);font:600 13.5px 'Manrope';border-radius:9px;cursor:pointer;text-align:left}
 .dots-menu button:active{background:#123022}
-.dots-menu button.red{color:#ffb3c1}
 .msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:6px}
-.day-chip{align-self:center;font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);background:#0a1a12;border:1px solid var(--line);padding:3px 12px;border-radius:20px;margin:8px 0 4px}
 .msg-row{display:flex;max-width:82%;animation:pop .18s ease}
 .msg-row.mine{align-self:flex-end;flex-direction:row-reverse}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
@@ -96,51 +93,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
 .m-sender{font:600 11px 'JetBrains Mono';color:var(--neon2);margin-bottom:2px;cursor:pointer}
 .m-text{white-space:pre-wrap;word-break:break-word;font-size:14.5px}
 .m-time{font-family:'JetBrains Mono';font-size:9.5px;opacity:.55;text-align:right;margin-top:2px}
-.m-ava{margin-right:6px;cursor:pointer;align-self:flex-end}
 .composer{padding:10px 12px;border-top:1px solid var(--line);background:rgba(8,17,11,.85);flex-shrink:0}
-.composer-note{font-size:12.5px;color:var(--danger);text-align:center;padding:8px;border:1px dashed #5a2233;border-radius:10px;margin-bottom:8px}
 .comp-row{display:flex;gap:8px;align-items:flex-end}
 .comp-row textarea{flex:1;max-height:110px;font-size:15px}
 .send-btn{width:46px;height:46px;border-radius:14px;border:0;background:linear-gradient(135deg,#3dffa0,#1fd468);color:#04140b;font-size:19px;cursor:pointer;flex-shrink:0}
 .send-btn:disabled{opacity:.35}
-.overlay{position:fixed;inset:0;background:rgba(2,6,4,.75);backdrop-filter:blur(6px);z-index:60;display:flex;align-items:center;justify-content:center;padding:14px;animation:fade .2s}
-@keyframes fade{from{opacity:0}}
-.modal{width:min(460px,100%);max-height:90dvh;overflow-y:auto;padding:22px;position:relative}
-.mclose{position:absolute;top:12px;right:12px}
-.mtitle{font-family:'Unbounded';font-size:17px;font-weight:800;margin-bottom:14px;padding-right:40px}
-.mlist{margin-top:10px;display:flex;flex-direction:column;gap:3px;max-height:340px;overflow-y:auto}
-.mrow{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:11px;cursor:pointer}
-.mrow:active{background:#0e2417}
-.mrow .u{font-weight:800;font-size:13.5px}
-.mrow .s{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut)}
-.mrow.check input{accent-color:#33ff8a;width:17px;height:17px}
-.pmodal{text-align:center}
-.pava{position:relative;width:fit-content;margin:4px auto 10px}
-.pava.edit{cursor:pointer}
-.avaHint{position:absolute;inset:0;border-radius:50%;background:rgba(3,10,6,.6);display:flex;align-items:center;justify-content:center;font-size:12px;opacity:0;font-weight:700}
-.pava.edit:active .avaHint{opacity:1}
-.pstat{position:absolute;right:2px;bottom:4px;width:14px;height:14px;border-radius:50%;border:3px solid #0a1611;background:#3a5a4a}
-.pstat.on{background:var(--neon)}
-.pmodal h2{font-family:'Unbounded';font-size:18px}
-.puser{font-family:'JetBrains Mono';color:var(--neon);font-size:12.5px;margin:2px 0}
-.pstatus{font-family:'JetBrains Mono';font-size:11px;color:var(--mut);margin-bottom:8px}
-.pabout{background:#07130c;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0;font-size:13.5px;text-align:left}
-.pmeta{font-size:10.5px;color:var(--mut);margin:8px 0}
-.pbtns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
-.pmodal .field{text-align:left}
-.arow{display:flex;gap:8px;align-items:center;padding:9px;border-radius:11px;margin-bottom:5px;background:#08140d}
-.ainfo{flex:1;min-width:0}
-.aname{font-weight:800;font-size:13.5px}
-.amail{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.st-on{color:var(--neon)}.st-off{color:var(--mut)}
-.chip{font:600 9px 'JetBrains Mono';padding:2px 6px;border-radius:5px;vertical-align:2px;margin-left:3px}
-.chip.adm{background:rgba(186,255,62,.15);color:var(--neon2);border:1px solid rgba(186,255,62,.4)}
-.chip.mut{background:rgba(255,200,60,.12);color:#ffd35c}
-.chip.ban{background:rgba(255,84,112,.12);color:#ff8ba0}
-.abtns{display:flex;gap:4px;flex-shrink:0}
-.hrow{display:flex;gap:8px;align-items:center;padding:9px;border-radius:10px;background:#08140d;margin-bottom:4px;font-size:13px;flex-wrap:wrap}
-.htime{font-family:'JetBrains Mono';font-size:10.5px;color:var(--mut);width:110px}
-.ban-big{font-family:'Unbounded';font-weight:900;font-size:clamp(24px,7vw,40px);color:var(--danger);text-shadow:0 0 30px rgba(255,84,112,.5);margin-bottom:12px;animation:flick 3s infinite}
 .toast-wrap{position:fixed;left:14px;right:14px;bottom:14px;z-index:100;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 .toast{background:#0b1d13;border:1px solid var(--neon);color:var(--txt);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13px;max-width:100%;pointer-events:auto;animation:slideIn .3s}
 @keyframes slideIn{from{transform:translateY(30px);opacity:0}}
@@ -228,13 +185,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
     <div id="chatView" class="hidden" style="display:none;flex-direction:column;height:100%">
       <div class="chat-head">
         <button type="button" class="ibtn" id="backBtn">←</button>
-        <span id="chatAva"></span><span id="chatStack" class="stack"></span>
         <div class="ch-info" id="chInfo"><div class="ch-name" id="chName"></div><div class="ch-status" id="chStatus"></div></div>
-        <button type="button" class="ibtn" id="chatDots">⋮</button>
       </div>
       <div class="msgs" id="msgList"></div>
       <div class="composer">
-        <div class="composer-note hidden" id="composerNote"></div>
         <div class="comp-row">
           <textarea class="input" id="msgInput" rows="1" placeholder="Сообщение…" maxlength="2000"></textarea>
           <button type="button" class="send-btn" id="sendBtn">➤</button>
@@ -244,13 +198,12 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
   </main>
 </div>
 
-<div id="modalRoot"></div>
 <div class="toast-wrap" id="toastRoot"></div>
 
 <script>
-// ЛОВУШКА ОШИБОК ДЛЯ ТЕЛЕФОНА
+// ПЕРЕХВАТ ВСЕХ ОШИБОК
 window.onerror = function(message, source, lineno, colno, error) {
-  alert('❌ Ошибка в коде:\n' + message + '\n\nНажми ОК, чтобы закрыть.');
+  alert('❌ ОШИБКА В КОДЕ:\n' + message + '\n\nСтрока: ' + lineno);
   return true;
 };
 
@@ -261,31 +214,20 @@ const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtTime=iso=>new Date(iso).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
-function dayLabel(iso){const d=new Date(iso),n=new Date();if(d.toDateString()===n.toDateString())return'Сегодня';const y=new Date(n);y.setDate(n.getDate()-1);if(d.toDateString()===y.toDateString())return'Вчера';return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});}
-function timeAgo(iso){if(!iso)return'давно';const s=(Date.now()-new Date(iso))/1e3;if(s<60)return'только что';if(s<3600)return Math.floor(s/60)+' мин';if(s<86400)return Math.floor(s/3600)+' ч';return Math.floor(s/86400)+' дн';}
-function hue(id){let h=0;for(const c of(id||'x'))h=(h*31+c.charCodeAt(0))%360;return h;}
-function avatarHTML(p,size=40){if(!p)return`<div class="ava" style="width:${size}px;height:${size}px">?</div>`;if(p.avatar_url)return`<img class="ava" src="${esc(p.avatar_url)}" style="width:${size}px;height:${size}px">`;const L=(p.display_name||p.username||'?').trim().charAt(0).toUpperCase();return`<div class="ava" style="width:${size}px;height:${size}px;font-size:${size*0.42}px;background:hsl(${hue(p.id)},70%,15%);color:hsl(${hue(p.id)},95%,65%)">${esc(L)}</div>`;}
 function toast(msg,type='ok'){const t=document.createElement('div');t.className='toast '+type;t.innerHTML=msg;$('#toastRoot').appendChild(t);setTimeout(()=>t.remove(),3400);}
 const ruErr=m=>/invalid login/i.test(m)?'Неверная почта или пароль':/already registered/i.test(m)?'Почта занята':/username.*unique|duplicate/i.test(m)?'Юзернейм занят':/at least 6/i.test(m)?'Пароль мин. 6 символов':m;
 const validUname=u=>/^[a-zA-Z0-9_]{3,20}$/.test(u);
 
-let me=null,myProfile=null,bootedFor=null,chats=[],currentChat=null,currentMessages=[],onlineIds=new Set(),blockedIds=new Set(),unread={},userCache=new Map();
-let presenceChan=null,dbChan=null,chatChan=null,hbTimer=null,typingTimer=null,lastTyping=0;
-let overlay=null,onModalClose=null;
-
-function openModal(html){closeModal();overlay=document.createElement('div');overlay.className='overlay';overlay.innerHTML=`<div class="modal panel">${html}<button type="button" class="ibtn mclose" id="mX">✕</button></div>`;document.body.appendChild(overlay);$('#mX').onclick=closeModal;}
-function closeModal(){if(overlay){overlay.remove();overlay=null;}if(onModalClose){const f=onModalClose;onModalClose=null;f();}}
-function confirmDialog(title,text,ok='Удалить'){return new Promise(res=>{let done=false;const r=v=>{if(!done){done=true;res(v);}};onModalClose=()=>r(false);openModal(`<div class="pmodal"><h2 style="margin-bottom:8px">${title}</h2><p class="dim">${text}</p><div class="pbtns"><button type="button" class="btn" id="cNo">Отмена</button><button type="button" class="btn danger" id="cYes">${ok}</button></div></div>`);$('#cYes').onclick=()=>{r(true);closeModal();};$('#cNo').onclick=()=>{r(false);closeModal();};});}
+let me=null, myProfile=null, bootedFor=null, chats=[], currentChat=null, currentMessages=[];
 
 function showScreen(id){['authScreen','nameScreen','banScreen'].forEach(s=>$('#'+s).classList.toggle('hidden',s!==id));$('#app').classList.add('hidden');}
-function cleanupToAuth(){[presenceChan,dbChan,chatChan].forEach(c=>{try{c&&sb.removeChannel(c)}catch(e){}});presenceChan=dbChan=chatChan=null;clearInterval(hbTimer);bootedFor=null;me=null;myProfile=null;chats=[];currentChat=null;currentMessages=[];onlineIds=new Set();blockedIds=new Set();unread={};userCache=new Map();$('#app').classList.add('hidden');$('#banScreen').classList.add('hidden');$('#nameScreen').classList.add('hidden');$('#authScreen').classList.remove('hidden');}
 
 $('#tabLogin').onclick=()=>{$('#tabLogin').classList.add('on');$('#tabReg').classList.remove('on');$('#loginForm').classList.remove('hidden');$('#regForm').classList.add('hidden');};
 $('#tabReg').onclick=()=>{$('#tabReg').classList.add('on');$('#tabLogin').classList.remove('on');$('#regForm').classList.remove('hidden');$('#loginForm').classList.add('hidden');};
 
 $('#liBtn').onclick=async()=>{
   $('#liErr').textContent='';
-  const email=$('#liEmail').value.trim(),pass=$('#liPass').value;
+  const email=$('#liEmail').value.trim(), pass=$('#liPass').value;
   if(!email||!pass){$('#liErr').textContent='Введи почту и пароль';return;}
   $('#liBtn').disabled=true;
   const{error}=await sb.auth.signInWithPassword({email,password:pass});
@@ -295,9 +237,10 @@ $('#liBtn').onclick=async()=>{
 
 $('#rgBtn').onclick=async()=>{
   $('#rgErr').textContent='';$('#rgOk').textContent='';
-  const email=$('#rgEmail').value.trim(),pass=$('#rgPass').value,uname=$('#rgUser').value.trim().toLowerCase();
+  const email=$('#rgEmail').value.trim(), pass=$('#rgPass').value, uname=$('#rgUser').value.trim().toLowerCase();
   if(!validUname(uname))return $('#rgErr').textContent='Юзернейм: 3–20 символов, латиница/цифры/_';
-  $('#rgBtn').disabled=true;sessionStorage.setItem('golda_uname',uname);
+  $('#rgBtn').disabled=true;
+  sessionStorage.setItem('golda_uname',uname);
   const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:uname}}});
   if(error)$('#rgErr').textContent=ruErr(error.message);
   else if(!data.session)$('#rgOk').textContent='📬 Проверь почту';
@@ -316,72 +259,197 @@ $('#nmBtn').onclick=async()=>{
   myProfile=prof;$('#nmBtn').disabled=false;enterApp();
 };
 
-async function boot(user){if(bootedFor===user.id)return;me=user;
+async function boot(user){
+  if(bootedFor===user.id)return;
+  me=user;
   const{data:prof}=await sb.from('profiles').select('*').eq('id',me.id).maybeSingle();
   if(!prof){$('#nmInput').value=sessionStorage.getItem('golda_uname')||'';showScreen('nameScreen');return;}
   myProfile=prof;bootedFor=user.id;
   if(prof.is_banned){showScreen('banScreen');return;}
   enterApp();
 }
+
 $('#banOut').onclick=()=>sb.auth.signOut();
 $('#btnLogout').onclick=()=>sb.auth.signOut();
 
-function enterApp(){showScreen('__none');['authScreen','nameScreen','banScreen'].forEach(s=>$('#'+s).classList.add('hidden'));$('#app').classList.remove('hidden');$('#btnAdmin').classList.toggle('hidden',myProfile.role!=='admin');renderMyCard();loadBlocks();loadChats();setupPresence();setupRealtime();clearInterval(hbTimer);hbTimer=setInterval(()=>touchSeen(),45000);}
-function touchSeen(){if(me)sb.from('profiles').update({last_seen:new Date().toISOString()}).eq('id',me.id).then(()=>{});}
-window.addEventListener('pagehide',touchSeen);
-document.addEventListener('visibilitychange',()=>{if(document.hidden)touchSeen();});
-function renderMyCard(){$('#myAva').innerHTML=avatarHTML(myProfile,40);$('#myName').textContent=myProfile.display_name||myProfile.username;userCache.set(me.id,myProfile);}
+function enterApp(){
+  showScreen('__none');
+  ['authScreen','nameScreen','banScreen'].forEach(s=>$('#'+s).classList.add('hidden'));
+  $('#app').classList.remove('hidden');
+  $('#btnAdmin').classList.toggle('hidden',myProfile.role!=='admin');
+  $('#myAva').innerHTML=`<div class="ava" style="width:40px;height:40px;background:#134d2e;color:#33ff8a">${esc((myProfile.display_name||myProfile.username).charAt(0).toUpperCase())}</div>`;
+  $('#myName').textContent=myProfile.display_name||myProfile.username;
+  loadChats();
+}
 
-function setupPresence(){presenceChan=sb.channel('golda-presence',{config:{presence:{key:me.id}}});presenceChan.on('presence',{event:'sync'},()=>{onlineIds=new Set(Object.keys(presenceChan.presenceState()));refreshStatusUI();});presenceChan.subscribe(st=>{if(st==='SUBSCRIBED')presenceChan.track({u:myProfile.username,ts:Date.now()});});}
-function setupRealtime(){dbChan=sb.channel('golda-db').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>onNewMessage(p.new)).on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},p=>onProfileUpdate(p.new)).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_members',filter:`user_id=eq.${me.id}`},()=>loadChats()).on('postgres_changes',{event:'INSERT',schema:'public',table:'chats'},()=>loadChats()).on('postgres_changes',{event:'DELETE',schema:'public',table:'chats'},({old:o})=>{if(currentChat&&currentChat.id===o.id)closeChat();loadChats();}).subscribe();}
-function onProfileUpdate(p){userCache.set(p.id,p);if(p.id===me.id){myProfile=p;$('#btnAdmin').classList.toggle('hidden',p.role!=='admin');if(p.is_banned){toast('Вы забанены','err');showScreen('banScreen');return;}updateComposerState();renderMyCard();}refreshStatusUI();}
+// МАКСИМАЛЬНО ПРОСТОЙ И ЗАЩИЩЁННЫЙ ЗАГРУЗЧИК ЧАТОВ
+async function loadChats(){
+  try {
+    if(!me) return;
+    // 1. Получаем ID чатов
+    const { data: mem, error: memErr } = await sb.from('chat_members').select('chat_id').eq('user_id', me.id);
+    if(memErr) { alert('Ошибка загрузки участников: ' + memErr.message); return; }
+    
+    const ids = (mem || []).map(r => r.chat_id);
+    if(ids.length === 0){
+      chats = [];
+      renderChatList();
+      return;
+    }
 
-async function loadChats(){if(!me)return;const{data:mem}=await sb.from('chat_members').select('chat_id').eq('user_id',me.id);const ids=(mem||[]).map(r=>r.chat_id);if(!ids.length){chats=[];renderChatList();return;}const{data:rows}=await sb.from('chats').select('id,type,name,created_by,created_at,members:chat_members(user_id,profiles(id,username,display_name,avatar_url)),last:messages(id,text,sender_id,created_at)').in('id',ids).order('created_at',{ascending:false,foreignTable:'messages'}).limit(1,{foreignTable:'messages'});chats=(rows||[]).map(r=>{const members=(r.members||[]).map(m=>m.profiles).filter(Boolean);members.forEach(p=>userCache.set(p.id,p));return{...r,members,lastMsg:(r.last&&r.last[0])||null,peer:r.type==='direct'?members.find(p=>p.id!==me.id)||null:null};});renderChatList();if(currentChat){const c=chats.find(x=>x.id===currentChat.id);if(!c)closeChat();else{currentChat=c;renderChatHeader();}}}
-function chatTitle(c){return c.type==='direct'?(c.peer?.display_name||c.peer?.username||'—'):c.name;}
-const chatTime=c=>c.lastMsg?c.lastMsg.created_at:c.created_at;
-function renderChatList(){const q=($('#sbSearch').value||'').toLowerCase();const list=[...chats].filter(c=>chatTitle(c).toLowerCase().includes(q)).sort((a,b)=>new Date(chatTime(b))-new Date(chatTime(a)));$('#chatList').innerHTML=list.length?list.map(c=>{const active=currentChat&&currentChat.id===c.id;const on=c.type==='direct'&&c.peer&&onlineIds.has(c.peer.id);const ava=c.type==='direct'?`<span class="ava-wrap">${avatarHTML(c.peer,46)}<span class="dot ${on?'on':''}"></span></span>`:`<div class="ava grp" style="width:46px;height:46px;font-size:19px">${esc((c.name||'G').charAt(0).toUpperCase())}</div>`;const prev=c.lastMsg?`${c.lastMsg.sender_id===me.id?'Вы: ':''}${esc(c.lastMsg.text)}`:'<span class="dim">нет сообщений</span>';const un=unread[c.id]?`<span class="badge">${unread[c.id]}</span>`:'';return`<div class="chat-item ${active?'active':''}" data-chat="${c.id}">${ava}<div class="ci-body"><div class="ci-top"><span class="ci-name">${esc(chatTitle(c))}</span><span class="ci-time">${c.lastMsg?fmtTime(c.lastMsg.created_at):''}</span></div><div class="ci-prev">${prev}</div></div>${un}</div>`;}).join(''):`<div class="dim" style="text-align:center;padding:30px 10px;font-size:13px">Пока пусто</div>`;}
-$('#chatList').addEventListener('click',e=>{const it=e.target.closest('[data-chat]');if(it)openChat(it.dataset.chat);});
-$('#sbSearch').addEventListener('input',renderChatList);
-function refreshStatusUI(){renderChatList();if(currentChat)renderChatStatus();}
-async function openChat(chatId){const c=chats.find(x=>x.id===chatId);if(!c)return;currentChat=c;currentMessages=[];unread[chatId]=0;$('#emptyState').classList.add('hidden');const cv=$('#chatView');cv.classList.remove('hidden');cv.style.display='flex';$('#app').classList.add('chat-open');renderChatList();renderChatHeader();const{data:msgs}=await sb.from('messages').select('*').eq('chat_id',chatId).order('created_at',{ascending:true}).limit(100);if(!currentChat||currentChat.id!==chatId)return;currentMessages=msgs||[];renderMessages();updateComposerState();joinTyping(chatId);}
-function closeChat(){currentChat=null;currentMessages=[];leaveTyping();$('#chatView').style.display='none';$('#chatView').classList.add('hidden');$('#emptyState').classList.remove('hidden');$('#app').classList.remove('chat-open');renderChatList();}
-$('#backBtn').onclick=closeChat;
-function renderChatHeader(){const c=currentChat;if(!c)return;$('#chatStack').innerHTML='';if(c.type==='direct'){$('#chatAva').innerHTML=`<span data-uid="${c.peer?.id||''}" style="cursor:pointer">${avatarHTML(c.peer,40)}</span>`;}else{$('#chatAva').innerHTML=`<div class="ava grp" style="width:40px;height:40px;font-size:17px">${esc((c.name||'G').charAt(0).toUpperCase())}</div>`;$('#chatStack').innerHTML=c.members.slice(0,3).map(p=>avatarHTML(p,24)).join('')+(c.members.length>3?`<div class="ava" style="width:24px;height:24px;font-size:9px">+${c.members.length-3}</div>`:'');}$('#chName').textContent=chatTitle(c);renderChatStatus();}
-function renderChatStatus(){const el=$('#chStatus');const c=currentChat;if(!c)return;if(el.dataset.typing)return;if(c.type==='group'){el.className='ch-status';el.textContent=`${c.members.length} участников`;return;}const p=c.peer;if(!p){el.textContent='';return;}const on=onlineIds.has(p.id);el.className='ch-status '+(on?'on':'');el.textContent=on?'● в сети':'не в сети · '+timeAgo(p.last_seen);}
-$('#chInfo').onclick=()=>{if(currentChat?.type==='direct'&&currentChat.peer)viewProfile(currentChat.peer.id);};
-$('#chatAva').addEventListener('click',e=>{const t=e.target.closest('[data-uid]');if(t&&t.dataset.uid)viewProfile(t.dataset.uid);});
-function msgHTML(m){const mine=m.sender_id===me.id;const s=userCache.get(m.sender_id);const grp=!mine&&currentChat.type==='group';return`<div class="msg-row ${mine?'mine':'theirs'}">${grp?`<span class="m-ava" data-uid="${m.sender_id}">${avatarHTML(s,30)}</span>`:''}<div class="bubble">${grp?`<div class="m-sender" data-uid="${m.sender_id}">@${esc(s?.username||'user')}</div>`:''}<div class="m-text">${esc(m.text)}</div><div class="m-time">${fmtTime(m.created_at)}</div></div></div>`;}
-function renderMessages(){const box=$('#msgList');box.innerHTML='';let lastDay='';for(const m of currentMessages){if(blockedIds.has(m.sender_id))continue;const d=new Date(m.created_at).toDateString();if(d!==lastDay){lastDay=d;box.insertAdjacentHTML('beforeend',`<div class="day-chip">${dayLabel(m.created_at)}</div>`);}box.insertAdjacentHTML('beforeend',msgHTML(m));}box.scrollTop=box.scrollHeight;}
-async function onNewMessage(m){const c=chats.find(x=>x.id===m.chat_id);if(c){c.lastMsg=m;if(!(currentChat&&currentChat.id===c.id)){unread[c.id]=(unread[c.id]||0)+1;}}renderChatList();if(currentChat&&currentChat.id===m.chat_id){if(!userCache.has(m.sender_id)){const{data}=await sb.from('profiles').select('id,username,display_name,avatar_url').eq('id',m.sender_id).maybeSingle();if(data)userCache.set(m.sender_id,data);}currentMessages.push(m);if(!blockedIds.has(m.sender_id)){$('#msgList').insertAdjacentHTML('beforeend',msgHTML(m));$('#msgList').scrollTop=$('#msgList').scrollHeight;}}}
-$('#msgList').addEventListener('click',e=>{const t=e.target.closest('[data-uid]');if(t&&t.dataset.uid)viewProfile(t.dataset.uid);});
-async function sendMessage(){const inp=$('#msgInput');const text=inp.value.trim();if(!text||!currentChat||inp.disabled)return;inp.value='';autosize();const{error}=await sb.from('messages').insert({chat_id:currentChat.id,sender_id:me.id,text});if(error)toast('Не удалось отправить','err');}
-$('#sendBtn').onclick=sendMessage;
-$('#msgInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
-function autosize(){const i=$('#msgInput');i.style.height='auto';i.style.height=Math.min(i.scrollHeight,110)+'px';}
-$('#msgInput').addEventListener('input',()=>{autosize();if(chatChan&&Date.now()-lastTyping>1300){lastTyping=Date.now();chatChan.send({type:'broadcast',event:'typing',payload:{uid:me.id,name:myProfile.display_name||myProfile.username}});}});
-function joinTyping(chatId){leaveTyping();chatChan=sb.channel('typing-'+chatId);chatChan.on('broadcast',{event:'typing'},({payload:p})=>{if(p.uid===me.id)return;const el=$('#chStatus');el.dataset.typing='1';el.className='ch-status typing';el.textContent=`✍ ${esc(p.name)} печатает…`;clearTimeout(typingTimer);typingTimer=setTimeout(()=>{delete el.dataset.typing;renderChatStatus();},2600);});chatChan.subscribe();}
-function leaveTyping(){if(chatChan){try{sb.removeChannel(chatChan)}catch(e){}chatChan=null;}clearTimeout(typingTimer);}
-$('#chatDots').onclick=e=>{e.stopPropagation();document.querySelector('.dots-menu')?.remove();const c=currentChat;if(!c)return;const blocked=c.peer&&blockedIds.has(c.peer.id);let items='';if(c.type==='direct'){items+=`<button type="button" data-act="profile">👤 Профиль</button><button type="button" data-act="block">${blocked?'✅ Разблокировать':'🚫 Заблокировать'}</button><button type="button" data-act="del" class="red">🗑 Удалить чат</button>`;}else{if(c.created_by===me.id)items+=`<button type="button" data-act="del" class="red">🗑 Удалить группу</button>`;items+=`<button type="button" data-act="leave">🚪 Покинуть группу</button>`;}const m=document.createElement('div');m.className='dots-menu';m.innerHTML=items;document.body.appendChild(m);m.onclick=async ev=>{const b=ev.target.closest('[data-act]');if(!b)return;m.remove();if(b.dataset.act==='profile')viewProfile(c.peer.id);if(b.dataset.act==='block')toggleBlock(c.peer.id);if(b.dataset.act==='del'){if(await confirmDialog('Удалить чат?','Все сообщения будут удалены.')){await sb.from('chats').delete().eq('id',c.id);toast('Чат удалён');closeChat();loadChats();}}if(b.dataset.act==='leave'){await sb.from('chat_members').delete().eq('chat_id',c.id).eq('user_id',me.id);toast('Вы покинули группу');closeChat();loadChats();}};};
-document.addEventListener('click',e=>{if(!e.target.closest('.dots-menu')&&!e.target.closest('#chatDots'))document.querySelector('.dots-menu')?.remove();});
-async function loadBlocks(){const{data}=await sb.from('blocks').select('blocked_id').eq('blocker_id',me.id);blockedIds=new Set((data||[]).map(r=>r.blocked_id));}
-async function toggleBlock(uid){if(blockedIds.has(uid)){await sb.from('blocks').delete().eq('blocker_id',me.id).eq('blocked_id',uid);blockedIds.delete(uid);toast('Разблокирован');}else{await sb.from('blocks').insert({blocker_id:me.id,blocked_id:uid});blockedIds.add(uid);toast('Заблокирован 🚫');}updateComposerState();if(currentChat)renderMessages();}
-function updateComposerState(){const note=$('#composerNote'),inp=$('#msgInput'),btn=$('#sendBtn');let html='';if(myProfile?.is_muted)html='🔇 Вы заглушены';else if(currentChat?.type==='direct'&&currentChat.peer&&blockedIds.has(currentChat.peer.id))html=`Заблокирован. <a id="ubInline" style="color:var(--neon);cursor:pointer">Разблокировать</a>`;note.classList.toggle('hidden',!html);note.innerHTML=html;inp.disabled=!!html;btn.disabled=!!html;const ub=$('#ubInline');if(ub)ub.onclick=()=>toggleBlock(currentChat.peer.id);}
-async function openDirectWith(uid){const ex=chats.find(c=>c.type==='direct'&&c.peer?.id===uid);if(ex)return openChat(ex.id);const{data:chat,error}=await sb.from('chats').insert({type:'direct',name:'',created_by:me.id}).select().single();if(error)return toast('Ошибка','err');await sb.from('chat_members').insert([{chat_id:chat.id,user_id:me.id},{chat_id:chat.id,user_id:uid}]);await loadChats();openChat(chat.id);}
-async function fetchUsers(){const{data}=await sb.from('profiles').select('*').order('username');(data||[]).forEach(u=>userCache.set(u.id,u));return data||[];}
-function userRow(u){const on=onlineIds.has(u.id);return`<div class="mrow" data-uid="${u.id}">${avatarHTML(u,38)}<div style="flex:1;min-width:0"><div class="u">${esc(u.display_name||u.username)} <span class="dim">@${esc(u.username)}</span></div><div class="s ${on?'st-on':''}">${on?'● в сети':'не в сети'}</div></div></div>`;}
-async function openNewChat(){const users=await fetchUsers();openModal(`<h2 class="mtitle">💬 Новый чат</h2><input class="input" id="ncQ" placeholder="🔎 Поиск…"><div class="mlist" id="ncList">${users.filter(u=>u.id!==me.id).map(u=>userRow(u)).join('')||'<div class="dim">Никого нет</div>'}</div>`);$('#ncQ').oninput=()=>{const q=$('#ncQ').value.toLowerCase();$('#ncList').innerHTML=users.filter(u=>u.id!==me.id&&(u.username+u.display_name).toLowerCase().includes(q)).map(u=>userRow(u)).join('');};$('#ncList').onclick=e=>{const r=e.target.closest('[data-uid]');if(r){closeModal();openDirectWith(r.dataset.uid);}};}
-$('#btnNewChat').onclick=openNewChat;
-async function openNewGroup(){const users=(await fetchUsers()).filter(u=>u.id!==me.id);openModal(`<h2 class="mtitle">👥 Новая группа</h2><div class="field"><label>Название</label><input class="input" id="gName" maxlength="40"></div><div class="field"><label>Участники</label><div class="mlist" id="gList">${users.map(u=>`<label class="mrow check"><input type="checkbox" value="${u.id}">${avatarHTML(u,34)}<div><div class="u">@${esc(u.username)}</div></div></label>`).join('')||'<div class="dim">Никого нет</div>'}</div></div><div class="pbtns"><button type="button" class="btn neon" id="gGo">Создать ⚡</button></div>`);$('#gGo').onclick=async()=>{const name=$('#gName').value.trim();if(!name)return toast('Введи название','err');const ids=[...document.querySelectorAll('#gList input:checked')].map(i=>i.value);const{data:chat,error}=await sb.from('chats').insert({type:'group',name,created_by:me.id}).select().single();if(error)return toast('Ошибка','err');await sb.from('chat_members').insert([{chat_id:chat.id,user_id:me.id},...ids.map(u=>({chat_id:chat.id,user_id:u}))]);closeModal();toast('Группа создана 👥');await loadChats();openChat(chat.id);};}
-$('#btnNewGroup').onclick=openNewGroup;
-async function viewProfile(uid){if(uid===me.id)return openMyProfile();const{data:p}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();if(!p)return;const isB=blockedIds.has(uid);const on=onlineIds.has(uid);openModal(`<div class="pmodal"><div class="pava">${avatarHTML(p,90)}<span class="pstat ${on?'on':''}"></span></div><h2>${esc(p.display_name||p.username)}</h2><div class="puser">@${esc(p.username)}</div><div class="pstatus">${on?'● в сети':'не в сети · был(а) '+timeAgo(p.last_seen)}</div>${p.about?`<div class="pabout">${esc(p.about)}</div>`:''}<div class="pmeta mono">регистрация: ${fmtDT(p.created_at)}</div><div class="pbtns"><button type="button" class="btn neon" id="pvW">✉ Написать</button><button type="button" class="btn ${isB?'':'danger'}" id="pvB">${isB?'✅ Разблокировать':'🚫 Заблокировать'}</button>${myProfile.role==='admin'&&p.role!=='admin'?`<button type="button" class="btn" id="pvM">${p.is_muted?'Снять мут':'🔇 Мут'}</button><button type="button" class="btn danger" id="pvBan">${p.is_banned?'Разбанить':'⛔ Бан'}</button>`:''}</div></div>`);$('#pvW').onclick=()=>{closeModal();openDirectWith(uid);};$('#pvB').onclick=async()=>{await toggleBlock(uid);closeModal();};const m=$('#pvM');if(m)m.onclick=async()=>{await sb.from('profiles').update({is_muted:!p.is_muted}).eq('id',uid);toast(p.is_muted?'Мут снят':'Мут 🔇');closeModal();};const bn=$('#pvBan');if(bn)bn.onclick=async()=>{await sb.from('profiles').update({is_banned:!p.is_banned}).eq('id',uid);toast(p.is_banned?'Разбанен':'Забанен ');closeModal();};}
-function openMyProfile(){openModal(`<div class="pmodal"><label class="pava edit">${avatarHTML(myProfile,90)}<span class="avaHint">📷</span><input type="file" id="avaFile" accept="image/*" hidden></label><div class="field"><label>Имя</label><input class="input" id="pfName" value="${esc(myProfile.display_name||'')}" maxlength="30"></div><div class="field"><label>Юзернейм</label><input class="input" id="pfUser" value="${esc(myProfile.username)}" maxlength="20"></div><div class="field"><label>О себе</label><textarea class="input" id="pfAbout" rows="3" maxlength="160">${esc(myProfile.about||'')}</textarea></div><div class="pmeta mono">${esc(myProfile.email)} · ${fmtDT(myProfile.created_at)}</div><div class="pbtns"><button type="button" class="btn neon" id="pfSave">Сохранить ✓</button></div></div>`);$('#avaFile').onchange=e=>uploadAvatar(e.target.files[0]);$('#pfSave').onclick=async()=>{const uname=$('#pfUser').value.trim().toLowerCase();if(!validUname(uname))return toast('Неверный юзернейм','err');const{data,error}=await sb.from('profiles').update({display_name:$('#pfName').value.trim(),username:uname,about:$('#pfAbout').value.trim()}).eq('id',me.id).select().single();if(error)return toast(ruErr(error.message),'err');myProfile=data;renderMyCard();renderChatList();if(currentChat)renderChatHeader();toast('Сохранено ✓');closeModal();};}
-$('#btnProfile').onclick=openMyProfile;$('#myCard').onclick=openMyProfile;
-async function uploadAvatar(file){if(!file)return;if(file.size>2*1024*1024)return toast('Макс 2 МБ','err');toast('Загрузка…');const path=`${me.id}/avatar`;const{error}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(error)return toast('Ошибка: '+error.message,'err');const{data}=sb.storage.from('avatars').getPublicUrl(path);const url=data.publicUrl+'?t='+Date.now();await sb.from('profiles').update({avatar_url:url}).eq('id',me.id);myProfile.avatar_url=url;renderMyCard();renderChatList();toast('Аватар обновлён ✓');closeModal();}
+    // 2. Получаем информацию о чатах (без сложных джоинов)
+    const { data: rows, error: chatErr } = await sb.from('chats').select('id, type, name, created_by').in('id', ids);
+    if(chatErr) { alert('Ошибка загрузки чатов: ' + chatErr.message); return; }
 
-$('#btnAdmin').onclick=async()=>{const{data:users,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});if(error)return toast('Нет доступа','err');const rows=users.map(u=>{const on=onlineIds.has(u.id);const adm=u.role==='admin';return`<div class="arow">${avatarHTML(u,38)}<div class="ainfo"><div class="aname">@${esc(u.username)}${adm?'<span class="chip adm">ADMIN</span>':''}${u.is_muted?'<span class="chip mut">MUTE</span>':''}${u.is_banned?'<span class="chip ban">BAN</span>':''}</div><div class="amail">${esc(u.email)} · <span class="${on?'st-on':'st-off'}">${on?'в сети':'не в сети'}</span></div></div><div class="abtns"><button type="button" class="btn small" data-act="mute" data-id="${u.id}" ${adm?'disabled':''}>${u.is_muted?'Снять мут':'🔇 Мут'}</button><button type="button" class="btn small ${u.is_banned?'':'danger'}" data-act="ban" data-id="${u.id}" ${adm?'disabled':''}>${u.is_banned?'Разбан':'⛔ Бан'}</button></div></div>`;});const hist=[...users].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(u=>`<div class="hrow"><span class="htime">${fmtDT(u.created_at)}</span><b>@${esc(u.username)}</b><span class="amail">${esc(u.email)}</span></div>`);openModal(`<h2 class="mtitle">🛡️ Админ-панель GOLDA</h2><div class="tabs" style="margin-bottom:12px"><button type="button" class="tab on" id="adTab1">Пользователи (${users.length})</button><button type="button" class="tab" id="adTab2">📜 История регистраций</button></div><div id="adUsers">${rows.join('')}</div><div id="adHist" class="hidden">${hist.join('')}</div>`);$('#adTab1').onclick=()=>{$('#adTab1').classList.add('on');$('#adTab2').classList.remove('on');$('#adUsers').classList.remove('hidden');$('#adHist').classList.add('hidden');};$('#adTab2').onclick=()=>{$('#adTab2').classList.add('on');$('#adTab1').classList.remove('on');$('#adHist').classList.remove('hidden');$('#adUsers').classList.add('hidden');};$('#adUsers').onclick=async e=>{const b=e.target.closest('[data-act]');if(!b)return;const u=users.find(x=>x.id===b.dataset.id);if(!u)return;if(b.dataset.act==='mute'){await sb.from('profiles').update({is_muted:!u.is_muted}).eq('id',u.id);toast(u.is_muted?`Мут снят: @${u.username}`:`🔇 @${u.username} заглушен`);}if(b.dataset.act==='ban'){await sb.from('profiles').update({is_banned:!u.is_banned}).eq('id',u.id);toast(u.is_banned?`Разбанен: @${u.username}`:`⛔ @${u.username} забанен`);}};};
+    chats = (rows || []).map(r => ({
+      id: r.id,
+      type: r.type,
+      name: r.name,
+      created_by: r.created_by
+    }));
 
-sb.auth.onAuthStateChange(async(ev,session)=>{if(ev==='SIGNED_OUT'){cleanupToAuth();return;}if(session?.user)boot(session.user);});
-sb.auth.getSession().then(({data:{session}})=>{if(session?.user)boot(session.user);else showScreen('authScreen');});
+    renderChatList();
+  } catch (err) {
+    alert('Критическая ошибка в loadChats:\n' + err.message);
+  }
+}
+
+function renderChatList(){
+  try {
+    const q = ($('#sbSearch').value || '').toLowerCase();
+    const list = chats.filter(c => (c.name || 'Личный чат').toLowerCase().includes(q));
+    
+    if(list.length === 0){
+      $('#chatList').innerHTML = '<div class="dim" style="text-align:center;padding:30px 10px;font-size:13px">Чаты не найдены</div>';
+      return;
+    }
+
+    $('#chatList').innerHTML = list.map(c => {
+      const active = currentChat && currentChat.id === c.id;
+      const title = c.type === 'direct' ? 'Личный чат' : (c.name || 'Группа');
+      
+      return `<div class="chat-item ${active ? 'active' : ''}" data-chat="${c.id}">
+        <div class="ava grp" style="width:46px;height:46px;font-size:19px">${esc(title.charAt(0).toUpperCase())}</div>
+        <div class="ci-body">
+          <div class="ci-top"><span class="ci-name">${esc(title)}</span></div>
+          <div class="ci-prev">Нажми, чтобы открыть</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    alert('Ошибка в renderChatList:\n' + err.message);
+  }
+}
+
+$('#chatList').addEventListener('click', e => {
+  const it = e.target.closest('[data-chat]');
+  if(it) openChat(it.dataset.chat);
+});
+
+async function openChat(chatId){
+  try {
+    const c = chats.find(x => x.id === chatId);
+    if(!c) return;
+    currentChat = c;
+    currentMessages = [];
+    
+    $('#emptyState').classList.add('hidden');
+    const cv = $('#chatView');
+    cv.classList.remove('hidden');
+    cv.style.display = 'flex';
+    $('#app').classList.add('chat-open');
+    
+    $('#chName').textContent = c.type === 'direct' ? 'Личный чат' : (c.name || 'Группа');
+    $('#chStatus').textContent = 'Загрузка сообщений...';
+    
+    // Простой запрос сообщений
+    const { data: msgs, error: msgErr } = await sb.from('messages')
+      .select('id, text, sender_id, created_at')
+      .eq('chat_id', chatId)
+      .order('created_at', { ascending: true });
+    
+    if(msgErr) {
+      alert('Ошибка загрузки сообщений: ' + msgErr.message);
+      return;
+    }
+    
+    currentMessages = msgs || [];
+    renderMessages();
+  } catch (err) {
+    alert('Ошибка в openChat:\n' + err.message);
+  }
+}
+
+function renderMessages(){
+  const box = $('#msgList');
+  box.innerHTML = '';
+  $('#chStatus').textContent = currentMessages.length + ' сообщений';
+  
+  currentMessages.forEach(m => {
+    const mine = m.sender_id === me.id;
+    const div = document.createElement('div');
+    div.className = `msg-row ${mine ? 'mine' : 'theirs'}`;
+    div.innerHTML = `
+      <div class="bubble">
+        ${!mine ? `<div class="m-sender">@${esc(myProfile.username)}</div>` : ''}
+        <div class="m-text">${esc(m.text || '[пустое сообщение]')}</div>
+        <div class="m-time">${fmtTime(m.created_at)}</div>
+      </div>
+    `;
+    box.appendChild(div);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+$('#backBtn').onclick = () => {
+  currentChat = null;
+  currentMessages = [];
+  $('#chatView').style.display = 'none';
+  $('#chatView').classList.add('hidden');
+  $('#emptyState').classList.remove('hidden');
+  $('#app').classList.remove('chat-open');
+};
+
+async function sendMessage(){
+  const inp = $('#msgInput');
+  const text = inp.value.trim();
+  if(!text || !currentChat) return;
+  
+  inp.value = '';
+  const { error } = await sb.from('messages').insert({
+    chat_id: currentChat.id,
+    sender_id: me.id,
+    text: text
+  });
+  
+  if(error) {
+    toast('Не удалось отправить: ' + error.message, 'err');
+  } else {
+    // Перезагружаем сообщения чата
+    openChat(currentChat.id);
+  }
+}
+
+$('#sendBtn').onclick = sendMessage;
+$('#msgInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+sb.auth.onAuthStateChange(async(ev, session) => {
+  if(ev === 'SIGNED_OUT'){
+    location.reload();
+    return;
+  }
+  if(session?.user) boot(session.user);
+});
+
+sb.auth.getSession().then(({data:{session}}) => {
+  if(session?.user) boot(session.user);
+  else showScreen('authScreen');
+});
 </script>
 </body>
 </html>
