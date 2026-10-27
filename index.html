@@ -27,17 +27,9 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .neon-glow {
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
-        }
-        .neon-border {
-            border: 1px solid rgba(0, 255, 102, 0.4);
-        }
-        .neon-border:focus {
-            border-color: #00ff66;
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
-        }
+        .neon-glow { box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
+        .neon-border { border: 1px solid rgba(0, 255, 102, 0.4); }
+        .neon-border:focus { border-color: #00ff66; outline: none; box-shadow: 0 0 10px rgba(0, 255, 102, 0.5); }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0f0d; }
         ::-webkit-scrollbar-thumb { background: #00ff6655; border-radius: 3px; }
@@ -52,8 +44,6 @@
                 <h1 class="text-3xl font-bold text-neon tracking-wider"><i class="fa-solid fa-bolt mr-2"></i>GOLDA-MESSENGER</h1>
                 <p class="text-gray-400 text-sm mt-1">Неоновый защищенный мессенджер</p>
             </div>
-            
-            <div id="auth-error" class="hidden mb-4 p-3 bg-red-950/50 border border-red-500 text-red-200 text-sm rounded-lg"></div>
 
             <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
                 <div id="username-field" class="hidden">
@@ -92,7 +82,7 @@
                         <div>
                             <h3 id="my-username" class="font-bold text-neon text-sm truncate max-w-[120px]">...</h3>
                             <span class="inline-block w-2 h-2 rounded-full bg-neon animate-pulse mr-1"></span>
-                            <span class="text-xs text-gray-400" id="my-status-text">В сети</span>
+                            <span class="text-xs text-gray-400">В сети</span>
                         </div>
                     </div>
                     <div class="flex space-x-2">
@@ -266,15 +256,13 @@
             e.preventDefault();
             const email = document.getElementById('email-input').value;
             const password = document.getElementById('password-input').value;
-            const errorDiv = document.getElementById('auth-error');
-            errorDiv.classList.add('hidden');
 
             if (isSignUpMode) {
                 const username = document.getElementById('username-input').value.trim();
-                if (!username) { errorDiv.textContent = 'Введите юзернейм!'; errorDiv.classList.remove('hidden'); return; }
+                if (!username) { alert('Введите юзернейм!'); return; }
 
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) { errorDiv.textContent = error.message; errorDiv.classList.remove('hidden'); return; }
+                if (error) { alert('Ошибка регистрации: ' + error.message); return; }
 
                 currentUser = data.user;
                 if (currentUser) {
@@ -290,7 +278,7 @@
                 location.reload();
             } else {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) { errorDiv.textContent = error.message; errorDiv.classList.remove('hidden'); return; }
+                if (error) { alert('Ошибка входа: ' + error.message); return; }
                 location.reload();
             }
         }
@@ -450,4 +438,45 @@
         }
         function closeTargetProfile() { document.getElementById('target-profile-modal').classList.add('hidden'); document.getElementById('target-profile-modal').classList.remove('flex'); }
 
-        function open
+        function openGroupModal() {
+            const list = document.getElementById('group-users-list');
+            list.innerHTML = '';
+            allUsers.forEach(u => {
+                list.innerHTML += `<label class="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer p-1"><input type="checkbox" value="${u.id}" class="group-user-checkbox accent-neon"><img src="${u.avatar_url}" class="w-6 h-6 rounded-full"><span>@${u.username}</span></label>`;
+            });
+            document.getElementById('group-modal').classList.remove('hidden');
+            document.getElementById('group-modal').classList.add('flex');
+        }
+        function closeGroupModal() { document.getElementById('group-modal').classList.add('hidden'); document.getElementById('group-modal').classList.remove('flex'); }
+        async function createGroup() {
+            const name = document.getElementById('group-name-input').value.trim();
+            if (!name) return;
+            const memberIds = Array.from(document.querySelectorAll('.group-user-checkbox:checked')).map(cb => cb.value);
+            memberIds.push(currentUser.id);
+            const { data: gData } = await supabaseClient.from('groups').insert([{ name, created_by: currentUser.id }]).select().single();
+            if (gData) {
+                await supabaseClient.from('group_members').insert(memberIds.map(uid => ({ group_id: gData.id, user_id: uid })));
+                alert('Группа создана!');
+                closeGroupModal();
+                loadAppData();
+            }
+        }
+
+        async function openAdminPanel() {
+            const { data: users } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+            const tbody = document.getElementById('admin-users-table');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                tbody.innerHTML += `<tr class="hover:bg-darkBg"><td class="p-3 text-neon">@${u.username}</td><td class="p-3">${u.email}</td><td class="p-3 text-xs text-gray-400">${new Date(u.created_at).toLocaleString()}</td><td class="p-3">${u.is_banned ? 'Бан' : 'Активен'}</td><td class="p-3 text-right"><button onclick="toggleBan('${u.id}', ${u.is_banned})" class="px-2 py-1 bg-red-600/20 text-red-400 rounded text-xs">${u.is_banned ? 'Разбан' : 'Бан'}</button></td></tr>`;
+            });
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-modal').classList.add('flex');
+        }
+        function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-modal').classList.remove('flex'); }
+        async function toggleBan(uid, banned) {
+            await supabaseClient.from('profiles').update({ is_banned: !banned }).eq('id', uid);
+            openAdminPanel();
+        }
+    </script>
+</body>
+</html>
