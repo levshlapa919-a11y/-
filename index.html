@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>golda-messenger</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,7 +22,9 @@
             }
         }
     </script>
+    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .neon-glow { box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
@@ -42,15 +45,6 @@
                 <p class="text-gray-400 text-sm mt-1">Неоновый защищенный мессенджер</p>
             </div>
 
-            <!-- ИНДИКАТОР ЗАГРУЗКИ -->
-            <div id="auth-loading" class="hidden text-center mb-4">
-                <i class="fa-solid fa-spinner fa-spin text-neon text-2xl"></i>
-                <p class="text-gray-400 text-sm mt-2">Подождите...</p>
-            </div>
-
-            <!-- СООБЩЕНИЕ ОБ ОШИБКЕ -->
-            <div id="auth-error" class="hidden bg-red-950/30 border border-red-900/50 text-red-400 text-sm p-3 rounded-xl mb-4"></div>
-
             <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
                 <div id="username-field" class="hidden">
                     <label class="block text-xs uppercase tracking-wider text-neon mb-1">Юзернейм</label>
@@ -62,7 +56,7 @@
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-neon mb-1">Пароль</label>
-                    <input type="password" id="password-input" required minlength="6" placeholder="••••••••" class="w-full bg-darkBg text-gray-100 px-4 py-3 rounded-xl neon-border">
+                    <input type="password" id="password-input" required placeholder="••••••••" class="w-full bg-darkBg text-gray-100 px-4 py-3 rounded-xl neon-border">
                 </div>
 
                 <button type="submit" id="auth-btn" class="w-full bg-neon text-darkBg font-bold py-3 rounded-xl hover:bg-neonDark transition shadow-lg shadow-neon/20 mt-2">
@@ -80,12 +74,12 @@
 
     <!-- Основной интерфейс -->
     <div id="app-screen" class="hidden flex h-screen w-full overflow-hidden relative">
-        
+        <!-- Сайдбар -->
         <div id="sidebar" class="w-full md:w-80 bg-panelBg border-r border-gray-800 flex flex-col justify-between absolute md:relative inset-y-0 left-0 z-30 transition-transform duration-300">
             <div>
                 <div class="p-4 border-b border-gray-800 flex items-center justify-between">
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="openProfileModal()">
-                        <img id="my-avatar" src="" class="w-11 h-11 rounded-full neon-border object-cover" alt="Avatar">
+                        <img id="my-avatar" src="" class="w-11 h-11 rounded-full neon-border object-cover bg-darkBg" alt="Avatar">
                         <div>
                             <div class="flex items-center space-x-1">
                                 <h3 id="my-username" class="font-bold text-neon text-sm truncate max-w-[100px]">...</h3>
@@ -116,6 +110,7 @@
             </div>
         </div>
 
+        <!-- Область чата -->
         <div class="flex-1 flex flex-col bg-darkBg h-full w-full">
             <div id="no-chat-selected" class="flex-1 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
                 <button onclick="toggleSidebar()" class="md:hidden mb-4 bg-cardBg border border-neon/40 text-neon px-4 py-2 rounded-xl text-sm font-bold flex items-center space-x-2">
@@ -130,7 +125,7 @@
                     <div class="flex items-center space-x-3">
                         <button onclick="toggleSidebar()" class="md:hidden text-neon hover:text-white mr-1 text-lg p-1"><i class="fa-solid fa-arrow-left"></i></button>
                         <div class="flex items-center space-x-3 cursor-pointer" onclick="openTargetProfile()">
-                            <img id="chat-header-avatar" src="" class="w-10 h-10 rounded-full neon-border object-cover">
+                            <img id="chat-header-avatar" src="" class="w-10 h-10 rounded-full neon-border object-cover bg-darkBg">
                             <div>
                                 <div class="flex items-center space-x-1">
                                     <h3 id="chat-header-name" class="font-bold text-gray-100">Имя</h3>
@@ -168,7 +163,7 @@
             <h2 class="text-xl font-bold text-neon mb-4">Профиль пользователя</h2>
             <div class="space-y-4">
                 <div class="flex flex-col items-center mb-4">
-                    <img id="edit-avatar-preview" src="" class="w-20 h-20 rounded-full neon-border object-cover mb-3">
+                    <img id="edit-avatar-preview" src="" class="w-20 h-20 rounded-full neon-border object-cover mb-3 bg-darkBg">
                     <label class="cursor-pointer bg-cardBg border border-neon/50 text-neon px-4 py-2 rounded-xl text-xs font-bold hover:bg-darkBg transition">
                         <i class="fa-solid fa-image mr-2"></i> Выбрать из галереи
                         <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleGalleryUpload(event)">
@@ -188,7 +183,7 @@
     <div id="target-profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-sm mx-4 text-center relative">
             <button onclick="closeTargetProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <img id="tp-avatar" src="" class="w-24 h-24 rounded-full neon-border object-cover mx-auto mb-4">
+            <img id="tp-avatar" src="" class="w-24 h-24 rounded-full neon-border object-cover mx-auto mb-4 bg-darkBg">
             <div class="flex items-center justify-center space-x-1 mb-1">
                 <h3 id="tp-username" class="text-xl font-bold text-neon">@username</h3>
                 <span id="tp-verified" class="hidden text-blue-400"><i class="fa-solid fa-circle-check"></i></span>
@@ -213,6 +208,7 @@
         </div>
     </div>
 
+    <!-- АДМИН ПАНЕЛЬ -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-4xl mx-4 relative max-h-[85vh] flex flex-col">
             <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -250,9 +246,11 @@
             if (session) {
                 currentUser = session.user;
                 await fetchOrCreateMyProfile();
+                
                 if (userProfile?.is_banned) {
-                    showAuthError('Ваш аккаунт заблокирован.');
+                    alert('Ваш аккаунт заблокирован.');
                     await supabaseClient.auth.signOut();
+                    location.reload();
                     return;
                 }
                 await ensureOfficialChannel();
@@ -265,34 +263,27 @@
         function showAuth() { 
             document.getElementById('auth-screen').classList.remove('hidden'); 
             document.getElementById('app-screen').classList.add('hidden'); 
-        }
-        
-        function showAuthError(msg) {
-            const el = document.getElementById('auth-error');
-            el.textContent = msg;
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 5000);
-        }
-
-        function setAuthLoading(state) {
-            document.getElementById('auth-loading').classList.toggle('hidden', !state);
-            document.getElementById('auth-btn').disabled = state;
-            document.getElementById('auth-btn').style.opacity = state ? '0.5' : '1';
+            document.getElementById('app-screen').classList.remove('flex'); 
         }
         
         function showApp() {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
             document.getElementById('app-screen').classList.add('flex');
-            document.getElementById('my-avatar').src = userProfile.avatar_url || '';
-            document.getElementById('my-username').textContent = '@' + userProfile.username;
             
-            if (userProfile.is_verified) {
+            // БЕЗОПАСНОЕ ПОЛУЧЕНИЕ ДАННЫХ (защита от краша)
+            const username = userProfile?.username || 'user';
+            const avatar = userProfile?.avatar_url || '';
+            
+            document.getElementById('my-avatar').src = avatar;
+            document.getElementById('my-username').textContent = '@' + username;
+            
+            if (userProfile?.is_verified) {
                 document.getElementById('my-verified-badge').classList.remove('hidden');
             }
 
-            const emailLower = (currentUser.email || '').toLowerCase();
-            if (userProfile.role === 'admin' || emailLower === 'levshlapa919@gmail.com') {
+            const emailLower = (currentUser?.email || '').toLowerCase();
+            if (userProfile?.role === 'admin' || emailLower === 'levshlapa919@gmail.com') {
                 document.getElementById('admin-panel-btn').classList.remove('hidden');
             }
 
@@ -326,101 +317,93 @@
             document.getElementById('username-field').classList.toggle('hidden', !isSignUpMode);
         }
 
-        // ОБНОВЛЁННАЯ ФУНКЦИЯ АВТОРИЗАЦИИ
         async function handleAuth(e) {
             e.preventDefault();
-            const email = document.getElementById('email-input').value.trim();
+            const email = document.getElementById('email-input').value;
             const password = document.getElementById('password-input').value;
 
-            setAuthLoading(true);
+            if (isSignUpMode) {
+                const username = document.getElementById('username-input').value.trim();
+                if (!username) { alert('Введите юзернейм!'); return; }
 
-            try {
-                if (isSignUpMode) {
-                    const username = document.getElementById('username-input').value.trim();
-                    if (!username) { 
-                        showAuthError('Введите юзернейм!'); 
-                        setAuthLoading(false);
-                        return; 
-                    }
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) { alert('Ошибка регистрации: ' + error.message); return; }
 
-                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                    if (error) { 
-                        showAuthError('Ошибка регистрации: ' + error.message); 
-                        setAuthLoading(false);
-                        return; 
-                    }
-
-                    currentUser = data.user;
-
-                    // Если Supabase требует подтверждение почты и сессии нет
-                    if (!currentUser) {
-                        showAuthError('Регистрация успешна! Проверьте почту для подтверждения.');
-                        setAuthLoading(false);
-                        return;
-                    }
-
+                currentUser = data.user;
+                if (currentUser) {
                     const role = (email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
                     const is_verified = (email.toLowerCase() === 'levshlapa919@gmail.com');
                     
-                    await supabaseClient.from('profiles').upsert([{
+                    const { error: upsertError } = await supabaseClient.from('profiles').upsert({
                         id: currentUser.id,
                         username: username,
                         email: email,
                         role: role,
                         is_verified: is_verified
-                    }]);
-
-                    // Мгновенный вход без перезагрузки
-                    await fetchOrCreateMyProfile();
-                    await ensureOfficialChannel();
-                    showApp();
-
-                } else {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) { 
-                        showAuthError('Ошибка входа: ' + error.message); 
-                        setAuthLoading(false);
-                        return; 
+                    });
+                    
+                    if (upsertError) {
+                        console.warn("Не удалось сохранить профиль при регистрации:", upsertError);
                     }
-                    
-                    currentUser = data.user;
-                    await fetchOrCreateMyProfile();
-                    
-                    if (userProfile?.is_banned) {
-                        showAuthError('Ваш аккаунт заблокирован.');
-                        await supabaseClient.auth.signOut();
-                        setAuthLoading(false);
-                        return;
-                    }
-                    
-                    await ensureOfficialChannel();
-                    showApp();
                 }
-            } catch (err) {
-                showAuthError('Произошла ошибка: ' + err.message);
-            } finally {
-                setAuthLoading(false);
+                alert('Регистрация успешна!');
+                location.reload();
+            } else {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) { alert('Ошибка входа: Неверная почта или пароль'); return; }
+                location.reload();
             }
         }
 
+        // ПУЛЕНЕПРОБИВАЕМАЯ ФУНКЦИЯ ПОЛУЧЕНИЯ ПРОФИЛЯ
         async function fetchOrCreateMyProfile() {
-            let { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
-            const role = (currentUser.email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
-            const is_verified = (currentUser.email.toLowerCase() === 'levshlapa919@gmail.com');
-            
+            let { data, error: fetchError } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+
+            const emailLower = (currentUser.email || '').toLowerCase();
+            const isAdmin = emailLower === 'levshlapa919@gmail.com';
+            const role = isAdmin ? 'admin' : 'user';
+            const is_verified = isAdmin;
+
             if (!data) {
-                const defaultUsername = currentUser.email.split('@')[0];
-                const { data: newProf } = await supabaseClient.from('profiles').upsert([{
-                    id: currentUser.id,
-                    username: defaultUsername,
-                    email: currentUser.email,
-                    role: role,
-                    is_verified: is_verified
-                }]).select().single();
-                userProfile = newProf;
+                const defaultUsername = currentUser.email ? currentUser.email.split('@')[0] : 'user_' + currentUser.id.slice(0, 6);
+                
+                const { data: newProf, error: insertError } = await supabaseClient
+                    .from('profiles')
+                    .upsert({
+                        id: currentUser.id,
+                        username: defaultUsername,
+                        email: currentUser.email,
+                        role: role,
+                        is_verified: is_verified
+                    })
+                    .select()
+                    .single();
+                
+                if (insertError) {
+                    console.error("КРИТИЧЕСКАЯ ОШИБКА БД:", insertError);
+                    alert("⚠️ Ошибка базы данных: " + insertError.message + "\n\nПроверьте в Supabase, что в таблице 'profiles' существуют колонки: username, email, role, is_verified. Интерфейс запущен во временном режиме.");
+                    
+                    // Создаем временный профиль в памяти, чтобы интерфейс НЕ ломался
+                    userProfile = {
+                        id: currentUser.id,
+                        username: defaultUsername,
+                        email: currentUser.email,
+                        role: role,
+                        is_verified: is_verified,
+                        avatar_url: '',
+                        bio: '',
+                        status: 'online'
+                    };
+                } else {
+                    userProfile = newProf;
+                }
             } else {
                 userProfile = data;
-                if (role === 'admin' && (userProfile.role !== 'admin' || !userProfile.is_verified)) {
+                if (isAdmin && (userProfile.role !== 'admin' || !userProfile.is_verified)) {
                     await supabaseClient.from('profiles').update({ role: 'admin', is_verified: true }).eq('id', currentUser.id);
                     userProfile.role = 'admin';
                     userProfile.is_verified = true;
@@ -433,7 +416,11 @@
             await supabaseClient.auth.signOut(); 
             location.reload(); 
         }
-        async function updateStatus(status) { if (!currentUser) return; await supabaseClient.from('profiles').update({ status }).eq('id', currentUser.id); }
+
+        async function updateStatus(status) { 
+            if (!currentUser) return; 
+            await supabaseClient.from('profiles').update({ status }).eq('id', currentUser.id); 
+        }
 
         async function loadAppData() {
             const { data: users } = await supabaseClient.from('profiles').select('*').neq('id', currentUser.id);
@@ -462,7 +449,7 @@
                 };
                 div.innerHTML = `
                     <div class="relative">
-                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed=${g.name}" class="w-11 h-11 rounded-full neon-border object-cover">
+                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed=${g.name}" class="w-11 h-11 rounded-full neon-border object-cover bg-darkBg">
                         ${isChannel ? '<span class="absolute bottom-0 right-0 w-3 h-3 bg-neon rounded-full border-2 border-panelBg"></span>' : ''}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -475,7 +462,7 @@
                 listContainer.appendChild(div);
             });
 
-            allUsers.filter(u => !u.is_banned && u.username.toLowerCase().includes(query)).forEach(u => {
+            allUsers.filter(u => !u.is_banned && u.username && u.username.toLowerCase().includes(query)).forEach(u => {
                 const statusColor = u.status === 'online' ? 'bg-neon' : u.status === 'in_chat' ? 'bg-yellow-400' : 'bg-gray-500';
                 const div = document.createElement('div');
                 div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === u.id ? 'bg-cardBg neon-border' : ''}`;
@@ -485,7 +472,7 @@
                 };
                 div.innerHTML = `
                     <div class="relative">
-                        <img src="${u.avatar_url}" class="w-11 h-11 rounded-full neon-border object-cover">
+                        <img src="${u.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username}" class="w-11 h-11 rounded-full neon-border object-cover bg-darkBg">
                         <span class="absolute bottom-0 right-0 w-3 h-3 ${statusColor} rounded-full border-2 border-panelBg"></span>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -493,7 +480,7 @@
                             <h4 class="font-bold text-gray-100 truncate text-sm">@${u.username}</h4>
                             ${u.is_verified ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
                         </div>
-                        <p class="text-xs text-gray-400">${u.status}</p>
+                        <p class="text-xs text-gray-400">${u.status || 'офлайн'}</p>
                     </div>`;
                 listContainer.appendChild(div);
             });
@@ -506,7 +493,7 @@
             document.getElementById('no-chat-selected').classList.add('hidden');
             document.getElementById('active-chat-container').classList.remove('hidden');
             document.getElementById('chat-header-name').textContent = chatInfo.type === 'user' ? '@' + chatInfo.name : chatInfo.name;
-            document.getElementById('chat-header-avatar').src = chatInfo.avatar;
+            document.getElementById('chat-header-avatar').src = chatInfo.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + chatInfo.name;
 
             const verifiedBadge = document.getElementById('chat-header-verified');
             if (chatInfo.is_verified || chatInfo.name === 'golda messenger new') {
@@ -516,7 +503,7 @@
             }
 
             const messageForm = document.getElementById('message-form');
-            if (chatInfo.name === 'golda messenger new' && userProfile.role !== 'admin') {
+            if (chatInfo.name === 'golda messenger new' && userProfile?.role !== 'admin') {
                 messageForm.style.display = 'none';
             } else {
                 messageForm.style.display = 'flex';
@@ -551,7 +538,7 @@
             div.innerHTML = `
                 <div class="max-w-[70%] bg-${isMe ? 'cardBg border border-neon/30' : 'panelBg'} rounded-2xl p-3 shadow-md">
                     ${!isMe && currentChat.type === 'group' ? `<div class="flex items-center mb-1"><span class="text-xs text-neon font-bold">@${sender?.username || 'admin'}</span>${verifiedHtml}</div>` : ''}
-                    <p class="text-sm text-gray-100">${msg.content}</p>
+                    <p class="text-sm text-gray-100 break-words">${msg.content}</p>
                 </div>`;
             messagesList.appendChild(div);
             messagesList.scrollTop = messagesList.scrollHeight;
@@ -563,14 +550,15 @@
             const content = input.value.trim();
             if (!content || !currentChat) return;
 
-            if (currentChat.name === 'golda messenger new' && userProfile.role !== 'admin') {
-                showAuthError('Только администратор может публиковать новости в канале!');
+            if (currentChat.name === 'golda messenger new' && userProfile?.role !== 'admin') {
+                alert('Только администратор может публиковать новости в канале!');
                 return;
             }
 
             const payload = { sender_id: currentUser.id, content };
             if (currentChat.type === 'user') payload.receiver_id = currentChat.id;
             else payload.group_id = currentChat.id;
+            
             const { error } = await supabaseClient.from('messages').insert([payload]);
             if (!error) input.value = '';
         }
@@ -591,15 +579,18 @@
         async function clearCurrentChat() {
             toggleChatMenu();
             if (!confirm('Очистить чат?')) return;
-            if (currentChat.type === 'user') await supabaseClient.from('messages').delete().or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),and(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
-            else await supabaseClient.from('messages').delete().eq('group_id', currentChat.id);
+            if (currentChat.type === 'user') {
+                await supabaseClient.from('messages').delete().or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),and(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
+            } else {
+                await supabaseClient.from('messages').delete().eq('group_id', currentChat.id);
+            }
             loadMessages();
         }
         async function blockCurrentUser() {
             toggleChatMenu();
             if (currentChat.type !== 'user') return;
             await supabaseClient.from('blocks').insert([{ blocker_id: currentUser.id, blocked_id: currentChat.id }]);
-            alert('Заблокирован');
+            alert('Пользователь заблокирован');
             location.reload();
         }
 
@@ -615,6 +606,7 @@
         }
 
         function openProfileModal() {
+            if (!userProfile) return; // Защита от краша
             tempNewAvatarBase64 = null;
             document.getElementById('edit-avatar-preview').src = userProfile.avatar_url || '';
             document.getElementById('edit-name').value = userProfile.username || '';
@@ -623,9 +615,13 @@
             document.getElementById('profile-modal').classList.remove('hidden');
             document.getElementById('profile-modal').classList.add('flex');
         }
-        function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); document.getElementById('profile-modal').classList.remove('flex'); }
+        function closeProfileModal() { 
+            document.getElementById('profile-modal').classList.add('hidden'); 
+            document.getElementById('profile-modal').classList.remove('flex'); 
+        }
 
         async function saveProfile() {
+            if (!userProfile) return;
             const username = document.getElementById('edit-username').value.trim();
             const bio = document.getElementById('edit-bio').value;
             let avatar_url = userProfile.avatar_url;
@@ -640,7 +636,7 @@
 
         function openTargetProfile() {
             if (!currentChat || currentChat.type !== 'user') return;
-            document.getElementById('tp-avatar').src = currentChat.avatar;
+            document.getElementById('tp-avatar').src = currentChat.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + currentChat.name;
             document.getElementById('tp-username').textContent = '@' + currentChat.name;
             document.getElementById('tp-email').textContent = currentChat.email || 'скрыто';
             document.getElementById('tp-bio').textContent = currentChat.bio || 'нет описания';
@@ -652,18 +648,25 @@
             document.getElementById('target-profile-modal').classList.remove('hidden');
             document.getElementById('target-profile-modal').classList.add('flex');
         }
-        function closeTargetProfile() { document.getElementById('target-profile-modal').classList.add('hidden'); document.getElementById('target-profile-modal').classList.remove('flex'); }
+        function closeTargetProfile() { 
+            document.getElementById('target-profile-modal').classList.add('hidden'); 
+            document.getElementById('target-profile-modal').classList.remove('flex'); 
+        }
 
         function openGroupModal() {
             const list = document.getElementById('group-users-list');
             list.innerHTML = '';
             allUsers.forEach(u => {
-                list.innerHTML += `<label class="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer p-1"><input type="checkbox" value="${u.id}" class="group-user-checkbox accent-neon"><img src="${u.avatar_url}" class="w-6 h-6 rounded-full"><span>@${u.username}</span></label>`;
+                list.innerHTML += `<label class="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer p-1 hover:bg-cardBg rounded"><input type="checkbox" value="${u.id}" class="group-user-checkbox accent-neon"><img src="${u.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username}" class="w-6 h-6 rounded-full bg-darkBg"><span>@${u.username}</span></label>`;
             });
             document.getElementById('group-modal').classList.remove('hidden');
             document.getElementById('group-modal').classList.add('flex');
         }
-        function closeGroupModal() { document.getElementById('group-modal').classList.add('hidden'); document.getElementById('group-modal').classList.remove('flex'); }
+        function closeGroupModal() { 
+            document.getElementById('group-modal').classList.add('hidden'); 
+            document.getElementById('group-modal').classList.remove('flex'); 
+        }
+        
         async function createGroup() {
             const name = document.getElementById('group-name-input').value.trim();
             if (!name) return;
@@ -684,23 +687,26 @@
             tbody.innerHTML = '';
             users.forEach(u => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-darkBg">
+                    <tr class="hover:bg-darkBg transition">
                         <td class="p-3 text-neon flex items-center space-x-1">
-                            <span>@${u.username}</span>
+                            <span>@${u.username || 'unknown'}</span>
                             ${u.is_verified ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
                         </td>
-                        <td class="p-3">${u.email}</td>
-                        <td class="p-3">${u.is_banned ? 'Бан' : 'Активен'}</td>
+                        <td class="p-3">${u.email || 'нет'}</td>
+                        <td class="p-3">${u.is_banned ? '<span class="text-red-400 font-bold">Бан</span>' : '<span class="text-green-400">Активен</span>'}</td>
                         <td class="p-3 text-right space-x-1">
-                            <button onclick="toggleVerify('${u.id}', ${u.is_verified})" class="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs">${u.is_verified ? 'Снять галочку' : 'Верифицировать'}</button>
-                            <button onclick="toggleBan('${u.id}', ${u.is_banned})" class="px-2 py-1 bg-red-600/20 text-red-400 rounded text-xs">${u.is_banned ? 'Разбан' : 'Бан'}</button>
+                            <button onclick="toggleVerify('${u.id}', ${u.is_verified})" class="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs hover:bg-blue-600/30 transition">${u.is_verified ? 'Снять галочку' : 'Верифицировать'}</button>
+                            <button onclick="toggleBan('${u.id}', ${u.is_banned})" class="px-2 py-1 bg-red-600/20 text-red-400 rounded text-xs hover:bg-red-600/30 transition">${u.is_banned ? 'Разбан' : 'Бан'}</button>
                         </td>
                     </tr>`;
             });
             document.getElementById('admin-modal').classList.remove('hidden');
             document.getElementById('admin-modal').classList.add('flex');
         }
-        function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-modal').classList.remove('flex'); }
+        function closeAdminPanel() { 
+            document.getElementById('admin-modal').classList.add('hidden'); 
+            document.getElementById('admin-modal').classList.remove('flex'); 
+        }
         async function toggleBan(uid, banned) {
             await supabaseClient.from('profiles').update({ is_banned: !banned }).eq('id', uid);
             openAdminPanel();
