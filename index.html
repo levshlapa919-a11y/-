@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GOLDA MESSENGER</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#33ff8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GOLDA">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%2304080a'/><text x='96' y='140' font-family='Arial' font-size='120' font-weight='bold' fill='%2333ff8a' text-anchor='middle'>G</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -149,6 +155,16 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
 ::-webkit-scrollbar-thumb{background:#154030;border-radius:8px}
 .app.chat-open .sidebar{display:none}
 .app.chat-open .main{display:flex}
+.notif-banner{background:linear-gradient(135deg,#1a4d2e,#0d2818);border:1px solid var(--neon);border-radius:12px;padding:10px 14px;margin:0 14px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 0 20px rgba(51,255,138,.2)}
+.notif-banner:active{transform:scale(.98)}
+.notif-banner .ico{font-size:22px}
+.notif-banner .txt{flex:1;font-size:13px;font-weight:600}
+.notif-banner .txt b{color:var(--neon)}
+.install-banner{background:linear-gradient(135deg,#0d2818,#1a4d2e);border:1px solid var(--neon2);border-radius:12px;padding:10px 14px;margin:0 14px 10px;display:flex;align-items:center;gap:10px;cursor:pointer;box-shadow:0 0 20px rgba(186,255,62,.2)}
+.install-banner:active{transform:scale(.98)}
+.install-banner .ico{font-size:22px}
+.install-banner .txt{flex:1;font-size:13px;font-weight:600}
+.install-banner .txt b{color:var(--neon2)}
 </style>
 </head>
 <body>
@@ -173,7 +189,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
         <div class="field"><label>Почта</label><input class="input" id="rgEmail" type="email" placeholder="you@mail.com" required></div>
         <div class="field"><label>Пароль (мин. 6)</label><input class="input" id="rgPass" type="password" placeholder="••••••••" required minlength="6"></div>
         <div class="field"><label>Юзернейм (обязательно)</label><input class="input" id="rgUser" placeholder="golda_user" required maxlength="20"></div>
-        <button class="btn neon wide" id="rgBtn">Создать аккаунт ⚡</button>
+        <button class="btn neon wide" id="rgBtn">Создать аккаунт </button>
         <div class="form-err" id="rgErr"></div><div class="form-ok" id="rgOk"></div>
       </form>
     </div>
@@ -206,8 +222,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
     <div class="sb-head">
       <div class="logo">G<b>◆</b>LDA</div><div class="spacer"></div>
       <button class="ibtn" id="btnProfile">👤</button>
-      <button class="ibtn hidden" id="btnAdmin">🛡️</button>
+      <button class="ibtn hidden" id="btnAdmin">️</button>
       <button class="ibtn" id="btnLogout">🚪</button>
+    </div>
+    <div id="installBanner" class="install-banner hidden">
+      <span class="ico">📲</span>
+      <span class="txt"><b>Установить приложение</b><br><span class="dim" style="font-size:11px">иконка на рабочем столе</span></span>
+      <span style="font-size:18px">›</span>
+    </div>
+    <div id="notifBanner" class="notif-banner hidden">
+      <span class="ico">🔔</span>
+      <span class="txt"><b>Включи уведомления</b><br><span class="dim" style="font-size:11px">чтобы не пропускать сообщения</span></span>
+      <span style="font-size:18px">›</span>
     </div>
     <div class="sb-actions">
       <button class="btn" id="btnNewChat">💬 Новый чат</button>
@@ -235,7 +261,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Manrope',system-ui,sans-
         <button class="ibtn" id="backBtn">←</button>
         <span id="chatAva"></span><span id="chatStack" class="stack"></span>
         <div class="ch-info" id="chInfo"><div class="ch-name" id="chName"></div><div class="ch-status" id="chStatus"></div></div>
-        <button class="ibtn" id="chatDots">⋮</button>
+        <button class="ibtn" id="chatDots"></button>
       </div>
       <div class="msgs" id="msgList"></div>
       <div class="composer">
@@ -257,7 +283,7 @@ const SB_URL='https://kkitqlbjtlizpeprejgj.supabase.co';
 const SB_KEY='sb_publishable_Sh_gCNW8Op0tdf3EMrffUA_yibVaF5A';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
-/* ══════════ УВЕДОМЛЕНИЯ: звук + вибрация + системные ══════════ */
+/* ═════════ УВЕДОМЛЕНИЯ ══════════ */
 let notifEnabled=localStorage.getItem('golda_notif')!=='off';
 let audioCtx=null;
 document.addEventListener('pointerdown',()=>{try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();audioCtx.resume();}catch(e){}},{once:true});
@@ -269,13 +295,36 @@ function playPing(){try{audioCtx=audioCtx||new(window.AudioContext||window.webki
   g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.3);
   o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+0.3);}catch(e){}}
 function vibrate(){try{navigator.vibrate&&navigator.vibrate([120,60,120]);}catch(e){}}
-function askNotifPermission(){if(!('Notification'in window))return;
-  if(Notification.permission==='default')Notification.requestPermission().then(p=>{if(p==='granted')toast('Уведомления включены 🔔');});}
 function notify(title,body){if(!notifEnabled)return;playPing();vibrate();
   if('Notification'in window&&Notification.permission==='granted'&&document.hidden){
     try{const n=new Notification(title,{body:body,tag:'golda'});n.onclick=()=>{window.focus();n.close();};}catch(e){}}}
 function updateTitle(){const total=Object.values(unread).reduce((a,b)=>a+b,0);
   document.title=total>0?`(${total}) GOLDA MESSENGER`:'GOLDA MESSENGER';}
+function checkNotifBanner(){const banner=$('#notifBanner');if(!banner)return;
+  if(!('Notification'in window)){banner.classList.add('hidden');return;}
+  if(Notification.permission==='granted'){banner.classList.add('hidden');return;}
+  if(Notification.permission==='denied'){banner.innerHTML='<span class="ico">⚠️</span><span class="txt"><b>Уведомления заблокированы</b><br><span class="dim" style="font-size:11px">Chrome →  → Настройки сайта → Уведомления → Разрешить</span></span>';return;}
+  banner.classList.remove('hidden');}
+function requestNotif(){if(!('Notification'in window)){toast('Браузер не поддерживает уведомления','err');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){notifEnabled=true;localStorage.setItem('golda_notif','on');toast('Уведомления включены 🔔');checkNotifBanner();
+      try{new Notification('GOLDA MESSENGER',{body:'Теперь ты будешь получать уведомления!'});}catch(e){}}
+    else if(p==='denied'){toast('Разрешение отклонено. Включи вручную: ⋮ → Настройки сайта','err');checkNotifBanner();}
+    else{toast('Разрешение не получено','err');}
+  });}
+
+/* ══════════ УСТАНОВКА ПРИЛОЖЕНИЯ ══════════ */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;checkInstallBanner();});
+function checkInstallBanner(){const b=$('#installBanner');if(!b)return;
+  if(deferredPrompt||window.matchMedia('(display-mode: standalone)').matches){
+    if(window.matchMedia('(display-mode: standalone)').matches){b.classList.add('hidden');}
+    else{b.classList.remove('hidden');}
+  }else{b.classList.add('hidden');}}
+$('#installBanner').onclick=async()=>{if(!deferredPrompt){toast('Установка недоступна. Используй «Создать ярлык» в меню Chrome','err');return;}
+  deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted'){toast('Приложение установлено! 📲');$('#installBanner').classList.add('hidden');}
+  deferredPrompt=null;};
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -308,11 +357,13 @@ async function boot(user){if(bootedFor===user.id)return;me=user;const{data:prof}
 $('#banOut').onclick=()=>sb.auth.signOut();
 $('#btnLogout').onclick=()=>sb.auth.signOut();
 
-function enterApp(){showScreen('__none');['authScreen','nameScreen','banScreen'].forEach(s=>$('#'+s).classList.add('hidden'));$('#app').classList.remove('hidden');$('#btnAdmin').classList.toggle('hidden',myProfile.role!=='admin');renderMyCard();askNotifPermission();loadBlocks();loadChats();setupPresence();setupRealtime();clearInterval(hbTimer);hbTimer=setInterval(()=>touchSeen(),45000);}
+function enterApp(){showScreen('__none');['authScreen','nameScreen','banScreen'].forEach(s=>$('#'+s).classList.add('hidden'));$('#app').classList.remove('hidden');$('#btnAdmin').classList.toggle('hidden',myProfile.role!=='admin');renderMyCard();checkNotifBanner();checkInstallBanner();loadBlocks();loadChats();setupPresence();setupRealtime();clearInterval(hbTimer);hbTimer=setInterval(()=>touchSeen(),45000);}
 function touchSeen(){if(me)sb.from('profiles').update({last_seen:new Date().toISOString()}).eq('id',me.id).then(()=>{});}
 window.addEventListener('pagehide',touchSeen);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)touchSeen();});
 function renderMyCard(){$('#myAva').innerHTML=avatarHTML(myProfile,40);$('#myName').textContent=myProfile.display_name||myProfile.username;userCache.set(me.id,myProfile);}
+
+$('#notifBanner').onclick=requestNotif;
 
 function setupPresence(){presenceChan=sb.channel('golda-presence',{config:{presence:{key:me.id}}});presenceChan.on('presence',{event:'sync'},()=>{onlineIds=new Set(Object.keys(presenceChan.presenceState()));refreshStatusUI();});presenceChan.subscribe(st=>{if(st==='SUBSCRIBED')presenceChan.track({u:myProfile.username,ts:Date.now()});});}
 function setupRealtime(){dbChan=sb.channel('golda-db').on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>onNewMessage(p.new)).on('postgres_changes',{event:'UPDATE',schema:'public',table:'profiles'},p=>onProfileUpdate(p.new)).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_members',filter:`user_id=eq.${me.id}`},()=>loadChats()).on('postgres_changes',{event:'INSERT',schema:'public',table:'chats'},()=>loadChats()).on('postgres_changes',{event:'DELETE',schema:'public',table:'chats'},({old:o})=>{if(currentChat&&currentChat.id===o.id)closeChat();loadChats();}).subscribe();}
@@ -358,17 +409,23 @@ async function fetchUsers(){const{data}=await sb.from('profiles').select('*').or
 function userRow(u){const on=onlineIds.has(u.id);return`<div class="mrow" data-uid="${u.id}">${avatarHTML(u,38)}<div style="flex:1;min-width:0"><div class="u">${esc(u.display_name||u.username)} <span class="dim">@${esc(u.username)}</span></div><div class="s ${on?'st-on':''}">${on?'● в сети':'не в сети'}</div></div></div>`;}
 async function openNewChat(){const users=await fetchUsers();openModal(`<h2 class="mtitle">💬 Новый чат</h2><input class="input" id="ncQ" placeholder="🔎 Поиск…"><div class="mlist" id="ncList">${users.filter(u=>u.id!==me.id).map(u=>userRow(u)).join('')||'<div class="dim">Пока никого нет</div>'}</div>`);$('#ncQ').oninput=()=>{const q=$('#ncQ').value.toLowerCase();$('#ncList').innerHTML=users.filter(u=>u.id!==me.id&&(u.username+u.display_name).toLowerCase().includes(q)).map(u=>userRow(u)).join('');};$('#ncList').onclick=e=>{const r=e.target.closest('[data-uid]');if(r){closeModal();openDirectWith(r.dataset.uid);}};}
 $('#btnNewChat').onclick=openNewChat;$('#qChat').onclick=openNewChat;
-async function openNewGroup(){const users=(await fetchUsers()).filter(u=>u.id!==me.id);openModal(`<h2 class="mtitle">👥 Новая группа</h2><div class="field"><label>Название группы</label><input class="input" id="gName" maxlength="40" placeholder="GOLDA core"></div><div class="field"><label>Участники</label><div class="mlist" id="gList">${users.map(u=>`<label class="mrow check"><input type="checkbox" value="${u.id}">${avatarHTML(u,34)}<div><div class="u">@${esc(u.username)}</div></div></label>`).join('')||'<div class="dim">Больше никого нет</div>'}</div></div><div class="pbtns"><button class="btn neon" id="gGo">Создать группу ⚡</button></div>`);$('#gGo').onclick=async()=>{const name=$('#gName').value.trim();if(!name)return toast('Введи название группы','err');const ids=[...document.querySelectorAll('#gList input:checked')].map(i=>i.value);const{data:chat,error}=await sb.from('chats').insert({type:'group',name,created_by:me.id}).select().single();if(error)return toast('Ошибка','err');await sb.from('chat_members').insert([{chat_id:chat.id,user_id:me.id},...ids.map(u=>({chat_id:chat.id,user_id:u}))]);closeModal();toast('Группа создана 👥');await loadChats();openChat(chat.id);};}
+async function openNewGroup(){const users=(await fetchUsers()).filter(u=>u.id!==me.id);openModal(`<h2 class="mtitle">👥 Новая группа</h2><div class="field"><label>Название группы</label><input class="input" id="gName" maxlength="40" placeholder="GOLDA core"></div><div class="field"><label>Участники</label><div class="mlist" id="gList">${users.map(u=>`<label class="mrow check"><input type="checkbox" value="${u.id}">${avatarHTML(u,34)}<div><div class="u">@${esc(u.username)}</div></div></label>`).join('')||'<div class="dim">Больше никого нет</div>'}</div></div><div class="pbtns"><button class="btn neon" id="gGo">Создать группу </button></div>`);$('#gGo').onclick=async()=>{const name=$('#gName').value.trim();if(!name)return toast('Введи название группы','err');const ids=[...document.querySelectorAll('#gList input:checked')].map(i=>i.value);const{data:chat,error}=await sb.from('chats').insert({type:'group',name,created_by:me.id}).select().single();if(error)return toast('Ошибка','err');await sb.from('chat_members').insert([{chat_id:chat.id,user_id:me.id},...ids.map(u=>({chat_id:chat.id,user_id:u}))]);closeModal();toast('Группа создана 👥');await loadChats();openChat(chat.id);};}
 $('#btnNewGroup').onclick=openNewGroup;$('#qGroup').onclick=openNewGroup;
-async function viewProfile(uid){if(uid===me.id)return openMyProfile();const{data:p}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();if(!p)return;const isB=blockedIds.has(uid);const on=onlineIds.has(uid);openModal(`<div class="pmodal"><div class="pava">${avatarHTML(p,90)}<span class="pstat ${on?'on':''}"></span></div><h2>${esc(p.display_name||p.username)}</h2><div class="puser">@${esc(p.username)}</div><div class="pstatus">${on?'● в сети':'не в сети · был(а) '+timeAgo(p.last_seen)}</div>${p.about?`<div class="pabout">${esc(p.about)}</div>`:''}<div class="pmeta mono">регистрация: ${fmtDT(p.created_at)}</div><div class="pbtns"><button class="btn neon" id="pvW">✉ Написать</button><button class="btn ${isB?'':'danger'}" id="pvB">${isB?'✅ Разблокировать':'🚫 Заблокировать'}</button>${myProfile.role==='admin'&&p.role!=='admin'?`<button class="btn" id="pvM">${p.is_muted?'Снять мут':'🔇 Мут'}</button><button class="btn danger" id="pvBan">${p.is_banned?'Разбанить':'⛔ Бан'}</button>`:''}</div></div>`);$('#pvW').onclick=()=>{closeModal();openDirectWith(uid);};$('#pvB').onclick=async()=>{await toggleBlock(uid);closeModal();};const m=$('#pvM');if(m)m.onclick=async()=>{await sb.from('profiles').update({is_muted:!p.is_muted}).eq('id',uid);toast(p.is_muted?'Мут снят':'Выдан мут 🔇');closeModal();};const bn=$('#pvBan');if(bn)bn.onclick=async()=>{await sb.from('profiles').update({is_banned:!p.is_banned}).eq('id',uid);toast(p.is_banned?'Разбанен':'Пользователь забанен ⛔');closeModal();};}
-function openMyProfile(){openModal(`<div class="pmodal"><label class="pava edit">${avatarHTML(myProfile,90)}<span class="avaHint">📷 изменить</span><input type="file" id="avaFile" accept="image/*" hidden></label><div class="field"><label>Имя</label><input class="input" id="pfName" value="${esc(myProfile.display_name||'')}" maxlength="30"></div><div class="field"><label>Юзернейм</label><input class="input" id="pfUser" value="${esc(myProfile.username)}" maxlength="20"></div><div class="field"><label>О себе</label><textarea class="input" id="pfAbout" rows="3" maxlength="160">${esc(myProfile.about||'')}</textarea></div><div class="pmeta mono">${esc(myProfile.email)} · ${fmtDT(myProfile.created_at)}</div><div class="pbtns"><button class="btn neon" id="pfSave">Сохранить ✓</button><button class="btn" id="pfNotif">${notifEnabled?'🔔 Уведомления: ВКЛ':'🔕 Уведомления: ВЫКЛ'}</button></div></div>`);$('#avaFile').onchange=e=>uploadAvatar(e.target.files[0]);$('#pfNotif').onclick=e=>{notifEnabled=!notifEnabled;localStorage.setItem('golda_notif',notifEnabled?'on':'off');e.target.textContent=notifEnabled?'🔔 Уведомления: ВКЛ':'🔕 Уведомления: ВЫКЛ';if(notifEnabled)askNotifPermission();toast(notifEnabled?'Уведомления включены':'Уведомления выключены');};$('#pfSave').onclick=async()=>{const uname=$('#pfUser').value.trim().toLowerCase();if(!validUname(uname))return toast('Неверный юзернейм','err');const{data,error}=await sb.from('profiles').update({display_name:$('#pfName').value.trim(),username:uname,about:$('#pfAbout').value.trim()}).eq('id',me.id).select().single();if(error)return toast(ruErr(error.message),'err');myProfile=data;renderMyCard();renderChatList();if(currentChat)renderChatHeader();toast('Профиль сохранён ✓');closeModal();};}
+async function viewProfile(uid){if(uid===me.id)return openMyProfile();const{data:p}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();if(!p)return;const isB=blockedIds.has(uid);const on=onlineIds.has(uid);openModal(`<div class="pmodal"><div class="pava">${avatarHTML(p,90)}<span class="pstat ${on?'on':''}"></span></div><h2>${esc(p.display_name||p.username)}</h2><div class="puser">@${esc(p.username)}</div><div class="pstatus">${on?'● в сети':'не в сети · был(а) '+timeAgo(p.last_seen)}</div>${p.about?`<div class="pabout">${esc(p.about)}</div>`:''}<div class="pmeta mono">регистрация: ${fmtDT(p.created_at)}</div><div class="pbtns"><button class="btn neon" id="pvW">✉ Написать</button><button class="btn ${isB?'':'danger'}" id="pvB">${isB?'✅ Разблокировать':'🚫 Заблокировать'}</button>${myProfile.role==='admin'&&p.role!=='admin'?`<button class="btn" id="pvM">${p.is_muted?'Снять мут':'🔇 Мут'}</button><button class="btn danger" id="pvBan">${p.is_banned?'Разбанить':' Бан'}</button>`:''}</div></div>`);$('#pvW').onclick=()=>{closeModal();openDirectWith(uid);};$('#pvB').onclick=async()=>{await toggleBlock(uid);closeModal();};const m=$('#pvM');if(m)m.onclick=async()=>{await sb.from('profiles').update({is_muted:!p.is_muted}).eq('id',uid);toast(p.is_muted?'Мут снят':'Выдан мут 🔇');closeModal();};const bn=$('#pvBan');if(bn)bn.onclick=async()=>{await sb.from('profiles').update({is_banned:!p.is_banned}).eq('id',uid);toast(p.is_banned?'Разбанен':'Пользователь забанен ⛔');closeModal();};}
+function openMyProfile(){openModal(`<div class="pmodal"><label class="pava edit">${avatarHTML(myProfile,90)}<span class="avaHint">📷 изменить</span><input type="file" id="avaFile" accept="image/*" hidden></label><div class="field"><label>Имя</label><input class="input" id="pfName" value="${esc(myProfile.display_name||'')}" maxlength="30"></div><div class="field"><label>Юзернейм</label><input class="input" id="pfUser" value="${esc(myProfile.username)}" maxlength="20"></div><div class="field"><label>О себе</label><textarea class="input" id="pfAbout" rows="3" maxlength="160">${esc(myProfile.about||'')}</textarea></div><div class="pmeta mono">${esc(myProfile.email)} · ${fmtDT(myProfile.created_at)}</div><div class="pbtns"><button class="btn neon" id="pfSave">Сохранить ✓</button><button class="btn" id="pfNotif">${notifEnabled?'🔔 Уведомления: ВКЛ':'🔕 Уведомления: ВЫКЛ'}</button></div></div>`);$('#avaFile').onchange=e=>uploadAvatar(e.target.files[0]);$('#pfNotif').onclick=e=>{notifEnabled=!notifEnabled;localStorage.setItem('golda_notif',notifEnabled?'on':'off');e.target.textContent=notifEnabled?'🔔 Уведомления: ВКЛ':'🔕 Уведомления: ВЫКЛ';if(notifEnabled)requestNotif();toast(notifEnabled?'Уведомления включены':'Уведомления выключены');};$('#pfSave').onclick=async()=>{const uname=$('#pfUser').value.trim().toLowerCase();if(!validUname(uname))return toast('Неверный юзернейм','err');const{data,error}=await sb.from('profiles').update({display_name:$('#pfName').value.trim(),username:uname,about:$('#pfAbout').value.trim()}).eq('id',me.id).select().single();if(error)return toast(ruErr(error.message),'err');myProfile=data;renderMyCard();renderChatList();if(currentChat)renderChatHeader();toast('Профиль сохранён ✓');closeModal();};}
 $('#btnProfile').onclick=openMyProfile;$('#myCard').onclick=openMyProfile;
 async function uploadAvatar(file){if(!file)return;if(file.size>2*1024*1024)return toast('Максимум 2 МБ','err');toast('Загрузка аватара…');const path=`${me.id}/avatar`;const{error}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(error)return toast('Ошибка загрузки: '+error.message,'err');const{data}=sb.storage.from('avatars').getPublicUrl(path);const url=data.publicUrl+'?t='+Date.now();await sb.from('profiles').update({avatar_url:url}).eq('id',me.id);myProfile.avatar_url=url;renderMyCard();renderChatList();toast('Аватар обновлён ✓');closeModal();}
 
-$('#btnAdmin').onclick=async()=>{const{data:users,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});if(error)return toast('Нет доступа','err');const rows=users.map(u=>{const on=onlineIds.has(u.id);const adm=u.role==='admin';return`<div class="arow">${avatarHTML(u,38)}<div class="ainfo"><div class="aname">@${esc(u.username)}${adm?'<span class="chip adm">ADMIN</span>':''}${u.is_muted?'<span class="chip mut">MUTE</span>':''}${u.is_banned?'<span class="chip ban">BAN</span>':''}</div><div class="amail">${esc(u.email)} · <span class="${on?'st-on':'st-off'}">${on?'в сети':'не в сети'}</span></div></div><div class="abtns"><button class="btn small" data-act="mute" data-id="${u.id}" ${adm?'disabled':''}>${u.is_muted?'Снять мут':'🔇 Мут'}</button><button class="btn small ${u.is_banned?'':'danger'}" data-act="ban" data-id="${u.id}" ${adm?'disabled':''}>${u.is_banned?'Разбан':'⛔ Бан'}</button></div></div>`;});const hist=[...users].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(u=>`<div class="hrow"><span class="htime">${fmtDT(u.created_at)}</span><b>@${esc(u.username)}</b><span class="amail">${esc(u.email)}</span></div>`);openModal(`<h2 class="mtitle">🛡️ Админ-панель GOLDA</h2><div class="tabs" style="margin-bottom:12px"><button class="tab on" id="adTab1">Пользователи (${users.length})</button><button class="tab" id="adTab2">📜 История регистраций</button></div><div id="adUsers">${rows.join('')}</div><div id="adHist" class="hidden">${hist.join('')}</div>`);$('#adTab1').onclick=()=>{$('#adTab1').classList.add('on');$('#adTab2').classList.remove('on');$('#adUsers').classList.remove('hidden');$('#adHist').classList.add('hidden');};$('#adTab2').onclick=()=>{$('#adTab2').classList.add('on');$('#adTab1').classList.remove('on');$('#adHist').classList.remove('hidden');$('#adUsers').classList.add('hidden');};$('#adUsers').onclick=async e=>{const b=e.target.closest('[data-act]');if(!b)return;const u=users.find(x=>x.id===b.dataset.id);if(!u)return;if(b.dataset.act==='mute'){await sb.from('profiles').update({is_muted:!u.is_muted}).eq('id',u.id);toast(u.is_muted?`Мут снят: @${u.username}`:`🔇 @${u.username} заглушен`);}if(b.dataset.act==='ban'){await sb.from('profiles').update({is_banned:!u.is_banned}).eq('id',u.id);toast(u.is_banned?`Разбанен: @${u.username}`:`⛔ @${u.username} забанен`);}};};
+$('#btnAdmin').onclick=async()=>{const{data:users,error}=await sb.from('profiles').select('*').order('created_at',{ascending:false});if(error)return toast('Нет доступа','err');const rows=users.map(u=>{const on=onlineIds.has(u.id);const adm=u.role==='admin';return`<div class="arow">${avatarHTML(u,38)}<div class="ainfo"><div class="aname">@${esc(u.username)}${adm?'<span class="chip adm">ADMIN</span>':''}${u.is_muted?'<span class="chip mut">MUTE</span>':''}${u.is_banned?'<span class="chip ban">BAN</span>':''}</div><div class="amail">${esc(u.email)} · <span class="${on?'st-on':'st-off'}">${on?'в сети':'не в сети'}</span></div></div><div class="abtns"><button class="btn small" data-act="mute" data-id="${u.id}" ${adm?'disabled':''}>${u.is_muted?'Снять мут':'🔇 Мут'}</button><button class="btn small ${u.is_banned?'':'danger'}" data-act="ban" data-id="${u.id}" ${adm?'disabled':''}>${u.is_banned?'Разбан':' Бан'}</button></div></div>`;});const hist=[...users].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(u=>`<div class="hrow"><span class="htime">${fmtDT(u.created_at)}</span><b>@${esc(u.username)}</b><span class="amail">${esc(u.email)}</span></div>`);openModal(`<h2 class="mtitle">️ Админ-панель GOLDA</h2><div class="tabs" style="margin-bottom:12px"><button class="tab on" id="adTab1">Пользователи (${users.length})</button><button class="tab" id="adTab2">📜 История регистраций</button></div><div id="adUsers">${rows.join('')}</div><div id="adHist" class="hidden">${hist.join('')}</div>`);$('#adTab1').onclick=()=>{$('#adTab1').classList.add('on');$('#adTab2').classList.remove('on');$('#adUsers').classList.remove('hidden');$('#adHist').classList.add('hidden');};$('#adTab2').onclick=()=>{$('#adTab2').classList.add('on');$('#adTab1').classList.remove('on');$('#adHist').classList.remove('hidden');$('#adUsers').classList.add('hidden');};$('#adUsers').onclick=async e=>{const b=e.target.closest('[data-act]');if(!b)return;const u=users.find(x=>x.id===b.dataset.id);if(!u)return;if(b.dataset.act==='mute'){await sb.from('profiles').update({is_muted:!u.is_muted}).eq('id',u.id);toast(u.is_muted?`Мут снят: @${u.username}`:`🔇 @${u.username} заглушен`);}if(b.dataset.act==='ban'){await sb.from('profiles').update({is_banned:!u.is_banned}).eq('id',u.id);toast(u.is_banned?`Разбанен: @${u.username}`:`⛔ @${u.username} забанен`);}};};
 
 sb.auth.onAuthStateChange(async(ev,session)=>{if(ev==='SIGNED_OUT'){cleanupToAuth();return;}if(session?.user)boot(session.user);});
 sb.auth.getSession().then(({data:{session}})=>{if(session?.user)boot(session.user);else showScreen('authScreen');});
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(()=>console.log('SW OK')).catch(e=>console.log('SW err',e));
+}
 </script>
 </body>
 </html>
