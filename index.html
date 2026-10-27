@@ -30,29 +30,9 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0b0f0d; }
         ::-webkit-scrollbar-thumb { background: #00ff6655; border-radius: 3px; }
-        #debug-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.9);
-            color: #00ff66;
-            font-size: 11px;
-            padding: 8px;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 9999;
-            font-family: monospace;
-        }
     </style>
 </head>
 <body class="bg-darkBg text-gray-100 h-screen flex flex-col overflow-hidden font-sans">
-
-    <!-- Панель диагностики -->
-    <div id="debug-panel" class="hidden">
-        <div class="font-bold mb-1">🔍 ДИАГНОСТИКА:</div>
-        <div id="debug-log"></div>
-    </div>
 
     <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-darkBg/95 backdrop-blur-md">
         <div class="bg-panelBg p-8 rounded-2xl neon-border neon-glow w-full max-w-md mx-4">
@@ -239,15 +219,6 @@
     </div>
 
     <script>
-        // Диагностика
-        function debug(msg) {
-            const panel = document.getElementById('debug-panel');
-            const log = document.getElementById('debug-log');
-            panel.classList.remove('hidden');
-            log.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${msg}</div>`;
-            log.scrollTop = log.scrollHeight;
-        }
-
         const SUPABASE_URL = 'https://dbyuboaxorfudywmlrvi.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_hG8WV5dG4gMpUu7zN4-ntQ_T1dYrFXJ';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -262,11 +233,9 @@
         let tempNewAvatarBase64 = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
-            debug('Страница загружена');
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
-                    debug('Сессия найдена');
                     currentUser = session.user;
                     await fetchOrCreateMyProfile();
                     if (userProfile?.is_banned) {
@@ -278,12 +247,10 @@
                     await ensureOfficialChannel();
                     showApp();
                 } else {
-                    debug('Сессии нет');
                     showAuth();
                 }
             } catch (err) {
-                debug('ОШИБКА: ' + err.message);
-                alert('Ошибка: ' + err.message);
+                alert('Ошибка загрузки: ' + err.message);
             }
         });
 
@@ -341,18 +308,13 @@
             document.getElementById('auth-btn').textContent = isSignUpMode ? 'Зарегистрироваться' : 'Войти';
             document.getElementById('auth-toggle-btn').textContent = isSignUpMode ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться';
             document.getElementById('username-field').classList.toggle('hidden', !isSignUpMode);
-            debug('Режим: ' + (isSignUpMode ? 'регистрация' : 'вход'));
         }
 
-        // Обработчик формы
         document.getElementById('auth-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            debug('Форма отправлена');
             
             const email = document.getElementById('email-input').value.trim();
             const password = document.getElementById('password-input').value;
-
-            debug('Email: ' + email);
 
             if (!email || !password) {
                 alert('Введите email и пароль!');
@@ -363,12 +325,10 @@
                 const username = document.getElementById('username-input').value.trim();
                 if (!username) { alert('Введите юзернейм!'); return; }
 
-                debug('Регистрация...');
                 try {
                     const { data, error } = await supabaseClient.auth.signUp({ email, password });
                     if (error) { 
-                        debug('Ошибка регистрации: ' + error.message);
-                        alert('Ошибка: ' + error.message); 
+                        alert('Ошибка регистрации: ' + error.message); 
                         return; 
                     }
 
@@ -386,30 +346,23 @@
                         });
                         
                         if (upsertError) {
-                            debug('Ошибка профиля: ' + upsertError.message);
-                        } else {
-                            debug('Профиль создан');
+                            console.warn("Не удалось сохранить профиль:", upsertError);
                         }
                     }
                     alert('Регистрация успешна!');
                     location.reload();
                 } catch (err) {
-                    debug('Исключение: ' + err.message);
                     alert('Ошибка: ' + err.message);
                 }
             } else {
-                debug('Вход...');
                 try {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) { 
-                        debug('Ошибка входа: ' + error.message);
                         alert('Ошибка входа: ' + error.message); 
                         return; 
                     }
-                    debug('Вход успешен');
                     location.reload();
                 } catch (err) {
-                    debug('Исключение: ' + err.message);
                     alert('Ошибка: ' + err.message);
                 }
             }
@@ -443,7 +396,7 @@
                     .single();
                 
                 if (insertError) {
-                    debug("Ошибка БД: " + insertError.message);
+                    console.error("Ошибка БД:", insertError);
                     userProfile = {
                         id: currentUser.id,
                         username: defaultUsername,
@@ -594,7 +547,8 @@
             let query = supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
             
             if (currentChat.type === 'user') {
-                query = query.or(`(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
+                // ИСПРАВЛЕННЫЙ СИНТАКСИС OR
+                query = query.or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),and(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
             } else {
                 query = query.eq('group_id', currentChat.id);
             }
@@ -602,8 +556,8 @@
             const { data, error } = await query;
             
             if (error) {
-                debug("Ошибка загрузки: " + error.message);
-                messagesList.innerHTML = `<div class="text-center text-red-400 p-4">Ошибка: ${error.message}</div>`;
+                console.error("Ошибка загрузки сообщений:", error);
+                messagesList.innerHTML = `<div class="text-center text-red-400 p-4">Ошибка загрузки: ${error.message}</div>`;
                 return;
             }
             
@@ -653,15 +607,12 @@
             if (currentChat.type === 'user') payload.receiver_id = currentChat.id;
             else payload.group_id = currentChat.id;
             
-            debug("Отправка: " + content);
-            
             const { data, error } = await supabaseClient.from('messages').insert([payload]).select();
             
             if (error) {
-                debug("Ошибка: " + error.message);
-                alert('Ошибка: ' + error.message);
+                console.error("Ошибка отправки:", error);
+                alert('Ошибка отправки: ' + error.message);
             } else {
-                debug("Отправлено!");
                 input.value = '';
                 if (data && data[0]) {
                     data[0].profiles = { username: userProfile.username, avatar_url: userProfile.avatar_url, is_verified: userProfile.is_verified };
@@ -687,7 +638,7 @@
             toggleChatMenu();
             if (!confirm('Очистить чат?')) return;
             if (currentChat.type === 'user') {
-                await supabaseClient.from('messages').delete().or(`(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
+                await supabaseClient.from('messages').delete().or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),and(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
             } else {
                 await supabaseClient.from('messages').delete().eq('group_id', currentChat.id);
             }
