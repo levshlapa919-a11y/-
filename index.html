@@ -73,8 +73,10 @@
     </div>
 
     <!-- Основной интерфейс -->
-    <div id="app-screen" class="hidden flex h-screen w-full overflow-hidden">
-        <div class="w-80 bg-panelBg border-r border-gray-800 flex flex-col justify-between">
+    <div id="app-screen" class="hidden flex h-screen w-full overflow-hidden relative">
+        
+        <!-- Сайдбар -->
+        <div id="sidebar" class="w-full md:w-80 bg-panelBg border-r border-gray-800 flex flex-col justify-between absolute md:relative inset-y-0 left-0 z-30 transition-transform duration-300">
             <div>
                 <div class="p-4 border-b border-gray-800 flex items-center justify-between">
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="openProfileModal()">
@@ -86,15 +88,15 @@
                         </div>
                     </div>
                     <div class="flex space-x-1 items-center">
-                        <!-- Кнопка админ панели (видна только админу) -->
                         <button id="admin-panel-btn" onclick="openAdminPanel()" title="Админ панель" class="hidden text-neon hover:text-white p-2 transition"><i class="fa-solid fa-shield-halved text-lg"></i></button>
                         <button onclick="openGroupModal()" title="Создать группу" class="text-gray-400 hover:text-neon p-2 transition"><i class="fa-solid fa-users-rectangle text-lg"></i></button>
                         <button onclick="openProfileModal()" title="Профиль" class="text-gray-400 hover:text-neon p-2 transition"><i class="fa-solid fa-gear text-lg"></i></button>
+                        <button onclick="toggleSidebar()" title="Закрыть меню" class="text-gray-400 hover:text-neon p-2 transition md:hidden"><i class="fa-solid fa-xmark text-xl"></i></button>
                     </div>
                 </div>
 
                 <div class="p-3">
-                    <input type="text" id="search-users" oninput="filterChats()" placeholder="Поиск чатов и групп..." class="w-full bg-darkBg text-sm text-gray-200 px-3 py-2 rounded-lg neon-border">
+                    <input type="text" id="search-users" oninput="filterChats()" placeholder="Поиск по юзернейму..." class="w-full bg-darkBg text-sm text-gray-200 px-3 py-2 rounded-lg neon-border">
                 </div>
 
                 <div id="chats-list" class="overflow-y-auto h-[calc(100vh-140px)] px-2 space-y-1"></div>
@@ -107,19 +109,26 @@
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col bg-darkBg">
-            <div id="no-chat-selected" class="flex-1 flex flex-col items-center justify-center text-gray-500">
+        <!-- Область чата -->
+        <div class="flex-1 flex flex-col bg-darkBg h-full w-full">
+            <div id="no-chat-selected" class="flex-1 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
+                <button onclick="toggleSidebar()" class="md:hidden mb-4 bg-cardBg border border-neon/40 text-neon px-4 py-2 rounded-xl text-sm font-bold flex items-center space-x-2">
+                    <i class="fa-solid fa-bars"></i> <span>Открыть список чатов</span>
+                </button>
                 <i class="fa-solid fa-comments text-6xl text-neon/20 mb-4 animate-bounce"></i>
-                <p class="text-lg">Выберите чат, чтобы начать общение в golda-messenger</p>
+                <p class="text-lg">Выберите чат по юзернейму, чтобы начать общение</p>
             </div>
 
             <div id="active-chat-container" class="hidden flex-1 flex flex-col h-full">
                 <div class="p-4 bg-panelBg border-b border-gray-800 flex items-center justify-between">
-                    <div class="flex items-center space-x-3 cursor-pointer" onclick="openTargetProfile()">
-                        <img id="chat-header-avatar" src="" class="w-10 h-10 rounded-full neon-border object-cover">
-                        <div>
-                            <h3 id="chat-header-name" class="font-bold text-gray-100">Имя</h3>
-                            <span id="chat-header-status" class="text-xs text-neon">в сети</span>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleSidebar()" class="md:hidden text-neon hover:text-white mr-1 text-lg p-1"><i class="fa-solid fa-arrow-left"></i></button>
+                        <div class="flex items-center space-x-3 cursor-pointer" onclick="openTargetProfile()">
+                            <img id="chat-header-avatar" src="" class="w-10 h-10 rounded-full neon-border object-cover">
+                            <div>
+                                <h3 id="chat-header-name" class="font-bold text-gray-100">Имя</h3>
+                                <span id="chat-header-status" class="text-xs text-neon">в сети</span>
+                            </div>
                         </div>
                     </div>
                     <div class="relative">
@@ -143,15 +152,19 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНЫЕ ОКНА -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ С ЗАГРУЗКОЙ ИЗ ГАЛЕРЕИ -->
     <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-md mx-4 relative">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
             <h2 class="text-xl font-bold text-neon mb-4">Профиль пользователя</h2>
             <div class="space-y-4">
                 <div class="flex flex-col items-center mb-4">
-                    <img id="edit-avatar-preview" src="" class="w-20 h-20 rounded-full neon-border object-cover mb-2">
-                    <input type="text" id="edit-avatar" placeholder="URL аватарки" class="w-full bg-darkBg text-xs text-gray-300 px-3 py-2 rounded-lg neon-border">
+                    <img id="edit-avatar-preview" src="" class="w-20 h-20 rounded-full neon-border object-cover mb-3">
+                    <!-- Кнопка галереи вместо ссылки -->
+                    <label class="cursor-pointer bg-cardBg border border-neon/50 text-neon px-4 py-2 rounded-xl text-xs font-bold hover:bg-darkBg transition">
+                        <i class="fa-solid fa-image mr-2"></i> Выбрать из галереи
+                        <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleGalleryUpload(event)">
+                    </label>
                 </div>
                 <div><label class="block text-xs text-neon mb-1">Имя</label><input type="text" id="edit-name" class="w-full bg-darkBg text-gray-100 px-3 py-2 rounded-lg neon-border text-sm"></div>
                 <div><label class="block text-xs text-neon mb-1">Юзернейм</label><input type="text" id="edit-username" class="w-full bg-darkBg text-gray-100 px-3 py-2 rounded-lg neon-border text-sm"></div>
@@ -186,7 +199,6 @@
         </div>
     </div>
 
-    <!-- АДМИН ПАНЕЛЬ С КНОПКОЙ ЗАКРЫТИЯ -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-4xl mx-4 relative max-h-[85vh] flex flex-col">
             <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -217,6 +229,7 @@
         let currentChat = null;
         let messagesSubscription = null;
         let isSignUpMode = false;
+        let tempNewAvatarBase64 = null; // Временное хранение картинки из галереи
 
         window.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -244,7 +257,6 @@
             document.getElementById('my-avatar').src = userProfile.avatar_url || '';
             document.getElementById('my-username').textContent = '@' + userProfile.username;
             
-            // Проверка прав администратора (регистронезависимая)
             const emailLower = (currentUser.email || '').toLowerCase();
             if (userProfile.role === 'admin' || emailLower === 'levshlapa919@gmail.com') {
                 document.getElementById('admin-panel-btn').classList.remove('hidden');
@@ -253,6 +265,10 @@
             updateStatus('online');
             loadAppData();
             setupRealtime();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
         }
 
         function toggleAuthMode() {
@@ -308,7 +324,6 @@
                 userProfile = newProf;
             } else {
                 userProfile = data;
-                // Принудительно обновляем роль администратора, если это ваша почта
                 if (role === 'admin' && userProfile.role !== 'admin') {
                     await supabaseClient.from('profiles').update({ role: 'admin' }).eq('id', currentUser.id);
                     userProfile.role = 'admin';
@@ -331,21 +346,32 @@
             renderChatsList();
         }
 
+        // Поиск строго по юзернейму
         function renderChatsList(filter = '') {
             const listContainer = document.getElementById('chats-list');
             listContainer.innerHTML = '';
-            allGroups.filter(g => g.name.toLowerCase().includes(filter.toLowerCase())).forEach(g => {
+            const query = filter.toLowerCase().replace('@', ''); // Убираем @ если пользователь ввел ее в поиск
+
+            allGroups.filter(g => g.name.toLowerCase().includes(query)).forEach(g => {
                 const div = document.createElement('div');
                 div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === g.id ? 'bg-cardBg neon-border' : ''}`;
-                div.onclick = () => selectChat({ id: g.id, type: 'group', name: g.name, avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=' + g.name });
+                div.onclick = () => {
+                    selectChat({ id: g.id, type: 'group', name: g.name, avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=' + g.name });
+                    if (window.innerWidth < 768) toggleSidebar();
+                };
                 div.innerHTML = `<img src="https://api.dicebear.com/7.x/identicon/svg?seed=${g.name}" class="w-11 h-11 rounded-full neon-border object-cover"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-100 truncate text-sm">${g.name}</h4><p class="text-xs text-neon">Группа</p></div>`;
                 listContainer.appendChild(div);
             });
-            allUsers.filter(u => !u.is_banned && u.username.toLowerCase().includes(filter.toLowerCase())).forEach(u => {
+
+            // Фильтрация пользователей по юзернейму
+            allUsers.filter(u => !u.is_banned && u.username.toLowerCase().includes(query)).forEach(u => {
                 const statusColor = u.status === 'online' ? 'bg-neon' : u.status === 'in_chat' ? 'bg-yellow-400' : 'bg-gray-500';
                 const div = document.createElement('div');
                 div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === u.id ? 'bg-cardBg neon-border' : ''}`;
-                div.onclick = () => selectChat({ id: u.id, type: 'user', name: u.username, avatar: u.avatar_url, status: u.status, bio: u.bio, email: u.email });
+                div.onclick = () => {
+                    selectChat({ id: u.id, type: 'user', name: u.username, avatar: u.avatar_url, status: u.status, bio: u.bio, email: u.email });
+                    if (window.innerWidth < 768) toggleSidebar();
+                };
                 div.innerHTML = `<div class="relative"><img src="${u.avatar_url}" class="w-11 h-11 rounded-full neon-border object-cover"><span class="absolute bottom-0 right-0 w-3 h-3 ${statusColor} rounded-full border-2 border-panelBg"></span></div><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-100 truncate text-sm">@${u.username}</h4><p class="text-xs text-gray-400">${u.status}</p></div>`;
                 listContainer.appendChild(div);
             });
@@ -423,8 +449,20 @@
             location.reload();
         }
 
+        // Загрузка аватарки из галереи телефона
+        function handleGalleryUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                tempNewAvatarBase64 = event.target.result;
+                document.getElementById('edit-avatar-preview').src = tempNewAvatarBase64;
+            };
+            reader.readAsDataURL(file);
+        }
+
         function openProfileModal() {
-            document.getElementById('edit-avatar').value = userProfile.avatar_url || '';
+            tempNewAvatarBase64 = null;
             document.getElementById('edit-avatar-preview').src = userProfile.avatar_url || '';
             document.getElementById('edit-name').value = userProfile.username || '';
             document.getElementById('edit-username').value = userProfile.username || '';
@@ -433,11 +471,21 @@
             document.getElementById('profile-modal').classList.add('flex');
         }
         function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); document.getElementById('profile-modal').classList.remove('flex'); }
+
         async function saveProfile() {
-            const avatar_url = document.getElementById('edit-avatar').value;
-            const username = document.getElementById('edit-username').value;
+            const username = document.getElementById('edit-username').value.trim();
             const bio = document.getElementById('edit-bio').value;
-            await supabaseClient.from('profiles').update({ avatar_url, username, bio }).eq('id', currentUser.id);
+            let avatar_url = userProfile.avatar_url;
+
+            if (tempNewAvatarBase64) {
+                avatar_url = tempNewAvatarBase64; // Сохраняем картинку из галереи
+            }
+
+            const { error } = await supabaseClient.from('profiles').update({ avatar_url, username, bio }).eq('id', currentUser.id);
+            if (error) {
+                alert('Ошибка сохранения: ' + error.message);
+                return;
+            }
             alert('Сохранено!');
             closeProfileModal();
             location.reload();
