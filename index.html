@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>golda-messenger</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,9 +21,7 @@
             }
         }
     </script>
-    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .neon-glow { box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
@@ -45,6 +42,15 @@
                 <p class="text-gray-400 text-sm mt-1">Неоновый защищенный мессенджер</p>
             </div>
 
+            <!-- ИНДИКАТОР ЗАГРУЗКИ -->
+            <div id="auth-loading" class="hidden text-center mb-4">
+                <i class="fa-solid fa-spinner fa-spin text-neon text-2xl"></i>
+                <p class="text-gray-400 text-sm mt-2">Подождите...</p>
+            </div>
+
+            <!-- СООБЩЕНИЕ ОБ ОШИБКЕ -->
+            <div id="auth-error" class="hidden bg-red-950/30 border border-red-900/50 text-red-400 text-sm p-3 rounded-xl mb-4"></div>
+
             <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
                 <div id="username-field" class="hidden">
                     <label class="block text-xs uppercase tracking-wider text-neon mb-1">Юзернейм</label>
@@ -56,7 +62,7 @@
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-wider text-neon mb-1">Пароль</label>
-                    <input type="password" id="password-input" required placeholder="••••••••" class="w-full bg-darkBg text-gray-100 px-4 py-3 rounded-xl neon-border">
+                    <input type="password" id="password-input" required minlength="6" placeholder="••••••••" class="w-full bg-darkBg text-gray-100 px-4 py-3 rounded-xl neon-border">
                 </div>
 
                 <button type="submit" id="auth-btn" class="w-full bg-neon text-darkBg font-bold py-3 rounded-xl hover:bg-neonDark transition shadow-lg shadow-neon/20 mt-2">
@@ -75,7 +81,6 @@
     <!-- Основной интерфейс -->
     <div id="app-screen" class="hidden flex h-screen w-full overflow-hidden relative">
         
-        <!-- Сайдбар -->
         <div id="sidebar" class="w-full md:w-80 bg-panelBg border-r border-gray-800 flex flex-col justify-between absolute md:relative inset-y-0 left-0 z-30 transition-transform duration-300">
             <div>
                 <div class="p-4 border-b border-gray-800 flex items-center justify-between">
@@ -111,7 +116,6 @@
             </div>
         </div>
 
-        <!-- Область чата -->
         <div class="flex-1 flex flex-col bg-darkBg h-full w-full">
             <div id="no-chat-selected" class="flex-1 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
                 <button onclick="toggleSidebar()" class="md:hidden mb-4 bg-cardBg border border-neon/40 text-neon px-4 py-2 rounded-xl text-sm font-bold flex items-center space-x-2">
@@ -157,7 +161,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ (с кнопкой выхода) -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
     <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-md mx-4 relative">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -174,8 +178,6 @@
                 <div><label class="block text-xs text-neon mb-1">Юзернейм</label><input type="text" id="edit-username" class="w-full bg-darkBg text-gray-100 px-3 py-2 rounded-lg neon-border text-sm"></div>
                 <div><label class="block text-xs text-neon mb-1">О себе</label><textarea id="edit-bio" rows="3" class="w-full bg-darkBg text-gray-100 px-3 py-2 rounded-lg neon-border text-sm"></textarea></div>
                 <button onclick="saveProfile()" class="w-full bg-neon text-darkBg font-bold py-2.5 rounded-xl hover:bg-neonDark transition">Сохранить</button>
-                
-                <!-- КНОПКА ВЫХОДА ИЗ АККАУНТА В ПРОФИЛЕ -->
                 <button onclick="logout()" class="w-full flex items-center justify-center space-x-2 bg-red-950/30 text-red-400 border border-red-900/50 py-2.5 rounded-xl hover:bg-red-900/40 transition text-sm font-bold">
                     <i class="fa-solid fa-right-from-bracket"></i> <span>Выйти из аккаунта</span>
                 </button>
@@ -211,7 +213,6 @@
         </div>
     </div>
 
-    <!-- АДМИН ПАНЕЛЬ С ВЕРИФИКАЦИЕЙ -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-4xl mx-4 relative max-h-[85vh] flex flex-col">
             <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -250,9 +251,8 @@
                 currentUser = session.user;
                 await fetchOrCreateMyProfile();
                 if (userProfile?.is_banned) {
-                    alert('Ваш аккаунт заблокирован.');
+                    showAuthError('Ваш аккаунт заблокирован.');
                     await supabaseClient.auth.signOut();
-                    location.reload();
                     return;
                 }
                 await ensureOfficialChannel();
@@ -262,7 +262,23 @@
             }
         });
 
-        function showAuth() { document.getElementById('auth-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); }
+        function showAuth() { 
+            document.getElementById('auth-screen').classList.remove('hidden'); 
+            document.getElementById('app-screen').classList.add('hidden'); 
+        }
+        
+        function showAuthError(msg) {
+            const el = document.getElementById('auth-error');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        function setAuthLoading(state) {
+            document.getElementById('auth-loading').classList.toggle('hidden', !state);
+            document.getElementById('auth-btn').disabled = state;
+            document.getElementById('auth-btn').style.opacity = state ? '0.5' : '1';
+        }
         
         function showApp() {
             document.getElementById('auth-screen').classList.add('hidden');
@@ -285,7 +301,6 @@
             setupRealtime();
         }
 
-        // Автоматическое создание и добавление в официальный канал «golda messenger new»
         async function ensureOfficialChannel() {
             const channelName = 'golda messenger new';
             let { data: channel } = await supabaseClient.from('groups').select('*').eq('name', channelName).single();
@@ -311,22 +326,42 @@
             document.getElementById('username-field').classList.toggle('hidden', !isSignUpMode);
         }
 
+        // ОБНОВЛЁННАЯ ФУНКЦИЯ АВТОРИЗАЦИИ
         async function handleAuth(e) {
             e.preventDefault();
-            const email = document.getElementById('email-input').value;
+            const email = document.getElementById('email-input').value.trim();
             const password = document.getElementById('password-input').value;
 
-            if (isSignUpMode) {
-                const username = document.getElementById('username-input').value.trim();
-                if (!username) { alert('Введите юзернейм!'); return; }
+            setAuthLoading(true);
 
-                const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) { alert('Ошибка регистрации: ' + error.message); return; }
+            try {
+                if (isSignUpMode) {
+                    const username = document.getElementById('username-input').value.trim();
+                    if (!username) { 
+                        showAuthError('Введите юзернейм!'); 
+                        setAuthLoading(false);
+                        return; 
+                    }
 
-                currentUser = data.user;
-                if (currentUser) {
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                    if (error) { 
+                        showAuthError('Ошибка регистрации: ' + error.message); 
+                        setAuthLoading(false);
+                        return; 
+                    }
+
+                    currentUser = data.user;
+
+                    // Если Supabase требует подтверждение почты и сессии нет
+                    if (!currentUser) {
+                        showAuthError('Регистрация успешна! Проверьте почту для подтверждения.');
+                        setAuthLoading(false);
+                        return;
+                    }
+
                     const role = (email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
                     const is_verified = (email.toLowerCase() === 'levshlapa919@gmail.com');
+                    
                     await supabaseClient.from('profiles').upsert([{
                         id: currentUser.id,
                         username: username,
@@ -334,13 +369,37 @@
                         role: role,
                         is_verified: is_verified
                     }]);
+
+                    // Мгновенный вход без перезагрузки
+                    await fetchOrCreateMyProfile();
+                    await ensureOfficialChannel();
+                    showApp();
+
+                } else {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) { 
+                        showAuthError('Ошибка входа: ' + error.message); 
+                        setAuthLoading(false);
+                        return; 
+                    }
+                    
+                    currentUser = data.user;
+                    await fetchOrCreateMyProfile();
+                    
+                    if (userProfile?.is_banned) {
+                        showAuthError('Ваш аккаунт заблокирован.');
+                        await supabaseClient.auth.signOut();
+                        setAuthLoading(false);
+                        return;
+                    }
+                    
+                    await ensureOfficialChannel();
+                    showApp();
                 }
-                alert('Регистрация успешна!');
-                location.reload();
-            } else {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) { alert('Ошибка входа: ' + error.message); return; }
-                location.reload();
+            } catch (err) {
+                showAuthError('Произошла ошибка: ' + err.message);
+            } finally {
+                setAuthLoading(false);
             }
         }
 
@@ -369,13 +428,11 @@
             }
         }
 
-        // ФУНКЦИЯ ВЫХОДА ИЗ АККАУНТА
         async function logout() { 
             if (currentUser) await updateStatus('offline'); 
             await supabaseClient.auth.signOut(); 
             location.reload(); 
         }
-
         async function updateStatus(status) { if (!currentUser) return; await supabaseClient.from('profiles').update({ status }).eq('id', currentUser.id); }
 
         async function loadAppData() {
@@ -507,7 +564,7 @@
             if (!content || !currentChat) return;
 
             if (currentChat.name === 'golda messenger new' && userProfile.role !== 'admin') {
-                alert('Только администратор может публиковать новости в канале!');
+                showAuthError('Только администратор может публиковать новости в канале!');
                 return;
             }
 
