@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>golda-messenger</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,9 +21,7 @@
             }
         }
     </script>
-    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .neon-glow { box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
@@ -37,7 +34,6 @@
 </head>
 <body class="bg-darkBg text-gray-100 h-screen flex flex-col overflow-hidden font-sans">
 
-    <!-- Окно авторизации / регистрации -->
     <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-darkBg/95 backdrop-blur-md">
         <div class="bg-panelBg p-8 rounded-2xl neon-border neon-glow w-full max-w-md mx-4">
             <div class="text-center mb-6">
@@ -72,9 +68,7 @@
         </div>
     </div>
 
-    <!-- Основной интерфейс -->
     <div id="app-screen" class="hidden flex h-screen w-full overflow-hidden relative">
-        <!-- Сайдбар -->
         <div id="sidebar" class="w-full md:w-80 bg-panelBg border-r border-gray-800 flex flex-col justify-between absolute md:relative inset-y-0 left-0 z-30 transition-transform duration-300">
             <div>
                 <div class="p-4 border-b border-gray-800 flex items-center justify-between">
@@ -97,7 +91,7 @@
                 </div>
 
                 <div class="p-3">
-                    <input type="text" id="search-users" oninput="filterChats()" placeholder="Поиск по юзернейму..." class="w-full bg-darkBg text-sm text-gray-200 px-3 py-2 rounded-lg neon-border">
+                    <input type="text" id="search-users" oninput="filterChats()" placeholder="🔍 Поиск по юзернейму..." class="w-full bg-darkBg text-sm text-gray-200 px-3 py-2 rounded-lg neon-border">
                 </div>
 
                 <div id="chats-list" class="overflow-y-auto h-[calc(100vh-140px)] px-2 space-y-1"></div>
@@ -110,14 +104,13 @@
             </div>
         </div>
 
-        <!-- Область чата -->
         <div class="flex-1 flex flex-col bg-darkBg h-full w-full">
             <div id="no-chat-selected" class="flex-1 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
                 <button onclick="toggleSidebar()" class="md:hidden mb-4 bg-cardBg border border-neon/40 text-neon px-4 py-2 rounded-xl text-sm font-bold flex items-center space-x-2">
                     <i class="fa-solid fa-bars"></i> <span>Открыть список чатов</span>
                 </button>
                 <i class="fa-solid fa-comments text-6xl text-neon/20 mb-4 animate-bounce"></i>
-                <p class="text-lg">Выберите чат или официальный канал</p>
+                <p class="text-lg">Введите юзернейм в поиск, чтобы найти собеседника</p>
             </div>
 
             <div id="active-chat-container" class="hidden flex-1 flex flex-col h-full">
@@ -156,7 +149,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
     <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-md mx-4 relative">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -208,7 +200,6 @@
         </div>
     </div>
 
-    <!-- АДМИН ПАНЕЛЬ -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-4xl mx-4 relative max-h-[85vh] flex flex-col">
             <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -246,7 +237,6 @@
             if (session) {
                 currentUser = session.user;
                 await fetchOrCreateMyProfile();
-                
                 if (userProfile?.is_banned) {
                     alert('Ваш аккаунт заблокирован.');
                     await supabaseClient.auth.signOut();
@@ -271,7 +261,6 @@
             document.getElementById('app-screen').classList.remove('hidden');
             document.getElementById('app-screen').classList.add('flex');
             
-            // БЕЗОПАСНОЕ ПОЛУЧЕНИЕ ДАННЫХ (защита от краша)
             const username = userProfile?.username || 'user';
             const avatar = userProfile?.avatar_url || '';
             
@@ -343,7 +332,7 @@
                     });
                     
                     if (upsertError) {
-                        console.warn("Не удалось сохранить профиль при регистрации:", upsertError);
+                        console.warn("Не удалось сохранить профиль:", upsertError);
                     }
                 }
                 alert('Регистрация успешна!');
@@ -355,7 +344,6 @@
             }
         }
 
-        // ПУЛЕНЕПРОБИВАЕМАЯ ФУНКЦИЯ ПОЛУЧЕНИЯ ПРОФИЛЯ
         async function fetchOrCreateMyProfile() {
             let { data, error: fetchError } = await supabaseClient
                 .from('profiles')
@@ -384,10 +372,7 @@
                     .single();
                 
                 if (insertError) {
-                    console.error("КРИТИЧЕСКАЯ ОШИБКА БД:", insertError);
-                    alert("⚠️ Ошибка базы данных: " + insertError.message + "\n\nПроверьте в Supabase, что в таблице 'profiles' существуют колонки: username, email, role, is_verified. Интерфейс запущен во временном режиме.");
-                    
-                    // Создаем временный профиль в памяти, чтобы интерфейс НЕ ломался
+                    console.error("Ошибка БД:", insertError);
                     userProfile = {
                         id: currentUser.id,
                         username: defaultUsername,
@@ -423,21 +408,22 @@
         }
 
         async function loadAppData() {
-            const { data: users } = await supabaseClient.from('profiles').select('*').neq('id', currentUser.id);
-            allUsers = users || [];
             const { data: myGroups } = await supabaseClient.from('group_members').select('group_id').eq('user_id', currentUser.id);
             const groupIds = myGroups?.map(g => g.group_id) || [];
+            
             if (groupIds.length > 0) {
                 const { data: groups } = await supabaseClient.from('groups').select('*').in('id', groupIds);
                 allGroups = groups || [];
             }
+            
+            allUsers = [];
             renderChatsList();
         }
 
         function renderChatsList(filter = '') {
             const listContainer = document.getElementById('chats-list');
             listContainer.innerHTML = '';
-            const query = filter.toLowerCase().replace('@', '');
+            const query = filter.toLowerCase().replace('@', '').trim();
 
             allGroups.filter(g => g.name.toLowerCase().includes(query)).forEach(g => {
                 const isChannel = g.name === 'golda messenger new';
@@ -462,28 +448,45 @@
                 listContainer.appendChild(div);
             });
 
-            allUsers.filter(u => !u.is_banned && u.username && u.username.toLowerCase().includes(query)).forEach(u => {
-                const statusColor = u.status === 'online' ? 'bg-neon' : u.status === 'in_chat' ? 'bg-yellow-400' : 'bg-gray-500';
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === u.id ? 'bg-cardBg neon-border' : ''}`;
-                div.onclick = () => {
-                    selectChat({ id: u.id, type: 'user', name: u.username, avatar: u.avatar_url, status: u.status, bio: u.bio, email: u.email, is_verified: u.is_verified });
-                    if (window.innerWidth < 768) toggleSidebar();
-                };
-                div.innerHTML = `
-                    <div class="relative">
-                        <img src="${u.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username}" class="w-11 h-11 rounded-full neon-border object-cover bg-darkBg">
-                        <span class="absolute bottom-0 right-0 w-3 h-3 ${statusColor} rounded-full border-2 border-panelBg"></span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center space-x-1">
-                            <h4 class="font-bold text-gray-100 truncate text-sm">@${u.username}</h4>
-                            ${u.is_verified ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
-                        </div>
-                        <p class="text-xs text-gray-400">${u.status || 'офлайн'}</p>
-                    </div>`;
-                listContainer.appendChild(div);
-            });
+            if (query.length > 0) {
+                supabaseClient.from('profiles')
+                    .select('*')
+                    .neq('id', currentUser.id)
+                    .ilike('username', `%${query}%`)
+                    .then(({ data: users }) => {
+                        const foundUsers = users || [];
+                        foundUsers.filter(u => !u.is_banned).forEach(u => {
+                            const statusColor = u.status === 'online' ? 'bg-neon' : u.status === 'in_chat' ? 'bg-yellow-400' : 'bg-gray-500';
+                            const div = document.createElement('div');
+                            div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === u.id ? 'bg-cardBg neon-border' : ''}`;
+                            div.onclick = () => {
+                                selectChat({ id: u.id, type: 'user', name: u.username, avatar: u.avatar_url, status: u.status, bio: u.bio, email: u.email, is_verified: u.is_verified });
+                                if (window.innerWidth < 768) toggleSidebar();
+                            };
+                            div.innerHTML = `
+                                <div class="relative">
+                                    <img src="${u.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + u.username}" class="w-11 h-11 rounded-full neon-border object-cover bg-darkBg">
+                                    <span class="absolute bottom-0 right-0 w-3 h-3 ${statusColor} rounded-full border-2 border-panelBg"></span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center space-x-1">
+                                        <h4 class="font-bold text-gray-100 truncate text-sm">@${u.username}</h4>
+                                        ${u.is_verified ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
+                                    </div>
+                                    <p class="text-xs text-gray-400">${u.status || 'офлайн'}</p>
+                                </div>`;
+                            listContainer.appendChild(div);
+                        });
+
+                        if (foundUsers.length === 0) {
+                            listContainer.innerHTML += `<div class="p-4 text-center text-gray-500 text-xs">Пользователь "${query}" не найден</div>`;
+                        }
+                    });
+            } else {
+                if (allGroups.length === 0) {
+                    listContainer.innerHTML = `<div class="p-4 text-center text-gray-500 text-xs mt-4">Введите юзернейм в поиск, чтобы найти пользователя</div>`;
+                }
+            }
         }
 
         function filterChats() { renderChatsList(document.getElementById('search-users').value); }
@@ -560,7 +563,11 @@
             else payload.group_id = currentChat.id;
             
             const { error } = await supabaseClient.from('messages').insert([payload]);
-            if (!error) input.value = '';
+            if (error) {
+                alert('Ошибка отправки: ' + error.message);
+            } else {
+                input.value = '';
+            }
         }
 
         function setupRealtime() {
@@ -606,7 +613,7 @@
         }
 
         function openProfileModal() {
-            if (!userProfile) return; // Защита от краша
+            if (!userProfile) return;
             tempNewAvatarBase64 = null;
             document.getElementById('edit-avatar-preview').src = userProfile.avatar_url || '';
             document.getElementById('edit-name').value = userProfile.username || '';
