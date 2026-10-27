@@ -82,8 +82,10 @@
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="openProfileModal()">
                         <img id="my-avatar" src="" class="w-11 h-11 rounded-full neon-border object-cover" alt="Avatar">
                         <div>
-                            <h3 id="my-username" class="font-bold text-neon text-sm truncate max-w-[120px]">...</h3>
-                            <span class="inline-block w-2 h-2 rounded-full bg-neon animate-pulse mr-1"></span>
+                            <div class="flex items-center space-x-1">
+                                <h3 id="my-username" class="font-bold text-neon text-sm truncate max-w-[100px]">...</h3>
+                                <span id="my-verified-badge" class="hidden text-blue-400 text-xs" title="Верифицирован"><i class="fa-solid fa-circle-check"></i></span>
+                            </div>
                             <span class="text-xs text-gray-400">В сети</span>
                         </div>
                     </div>
@@ -116,7 +118,7 @@
                     <i class="fa-solid fa-bars"></i> <span>Открыть список чатов</span>
                 </button>
                 <i class="fa-solid fa-comments text-6xl text-neon/20 mb-4 animate-bounce"></i>
-                <p class="text-lg">Выберите чат по юзернейму, чтобы начать общение</p>
+                <p class="text-lg">Выберите чат или официальный канал</p>
             </div>
 
             <div id="active-chat-container" class="hidden flex-1 flex flex-col h-full">
@@ -126,7 +128,10 @@
                         <div class="flex items-center space-x-3 cursor-pointer" onclick="openTargetProfile()">
                             <img id="chat-header-avatar" src="" class="w-10 h-10 rounded-full neon-border object-cover">
                             <div>
-                                <h3 id="chat-header-name" class="font-bold text-gray-100">Имя</h3>
+                                <div class="flex items-center space-x-1">
+                                    <h3 id="chat-header-name" class="font-bold text-gray-100">Имя</h3>
+                                    <span id="chat-header-verified" class="hidden text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>
+                                </div>
                                 <span id="chat-header-status" class="text-xs text-neon">в сети</span>
                             </div>
                         </div>
@@ -135,7 +140,7 @@
                         <button onclick="toggleChatMenu()" class="text-gray-400 hover:text-neon p-2 transition"><i class="fa-solid fa-ellipsis-vertical text-xl"></i></button>
                         <div id="chat-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-panelBg neon-border rounded-xl shadow-xl z-20 overflow-hidden">
                             <button onclick="clearCurrentChat()" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-cardBg hover:text-neon transition"><i class="fa-solid fa-trash mr-2"></i> Удалить чат</button>
-                            <button onclick="blockCurrentUser()" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-cardBg transition"><i class="fa-solid fa-ban mr-2"></i> Заблокировать</button>
+                            <button onclick="blockCurrentUser()" id="block-menu-btn" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-cardBg transition"><i class="fa-solid fa-ban mr-2"></i> Заблокировать</button>
                         </div>
                     </div>
                 </div>
@@ -152,7 +157,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ С ЗАГРУЗКОЙ ИЗ ГАЛЕРЕИ -->
+    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
     <div id="profile-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-md mx-4 relative">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -160,7 +165,6 @@
             <div class="space-y-4">
                 <div class="flex flex-col items-center mb-4">
                     <img id="edit-avatar-preview" src="" class="w-20 h-20 rounded-full neon-border object-cover mb-3">
-                    <!-- Кнопка галереи вместо ссылки -->
                     <label class="cursor-pointer bg-cardBg border border-neon/50 text-neon px-4 py-2 rounded-xl text-xs font-bold hover:bg-darkBg transition">
                         <i class="fa-solid fa-image mr-2"></i> Выбрать из галереи
                         <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleGalleryUpload(event)">
@@ -178,7 +182,10 @@
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-sm mx-4 text-center relative">
             <button onclick="closeTargetProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-neon"><i class="fa-solid fa-xmark text-xl"></i></button>
             <img id="tp-avatar" src="" class="w-24 h-24 rounded-full neon-border object-cover mx-auto mb-4">
-            <h3 id="tp-username" class="text-xl font-bold text-neon mb-1">@username</h3>
+            <div class="flex items-center justify-center space-x-1 mb-1">
+                <h3 id="tp-username" class="text-xl font-bold text-neon">@username</h3>
+                <span id="tp-verified" class="hidden text-blue-400"><i class="fa-solid fa-circle-check"></i></span>
+            </div>
             <p id="tp-email" class="text-xs text-gray-400 mb-3">email@example.com</p>
             <div class="bg-darkBg p-3 rounded-xl neon-border text-sm text-gray-300 mb-4 text-left">
                 <span class="text-xs text-neon block mb-1 font-bold">О себе:</span>
@@ -199,6 +206,7 @@
         </div>
     </div>
 
+    <!-- АДМИН ПАНЕЛЬ С ВЕРИФИКАЦИЕЙ -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md">
         <div class="bg-panelBg p-6 rounded-2xl neon-border w-full max-w-4xl mx-4 relative max-h-[85vh] flex flex-col">
             <button onclick="closeAdminPanel()" class="absolute top-4 right-4 text-gray-400 hover:text-neon p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
@@ -207,7 +215,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-darkBg text-neon text-xs uppercase border-b border-gray-800">
-                            <th class="p-3">Юзернейм</th><th class="p-3">Почта</th><th class="p-3">Время</th><th class="p-3">Статус</th><th class="p-3 text-right">Действия</th>
+                            <th class="p-3">Юзернейм</th><th class="p-3">Почта</th><th class="p-3">Статус</th><th class="p-3 text-right">Действия</th>
                         </tr>
                     </thead>
                     <tbody id="admin-users-table" class="text-sm divide-y divide-gray-800"></tbody>
@@ -229,7 +237,7 @@
         let currentChat = null;
         let messagesSubscription = null;
         let isSignUpMode = false;
-        let tempNewAvatarBase64 = null; // Временное хранение картинки из галереи
+        let tempNewAvatarBase64 = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -242,6 +250,7 @@
                     location.reload();
                     return;
                 }
+                await ensureOfficialChannel();
                 showApp();
             } else {
                 showAuth();
@@ -257,6 +266,10 @@
             document.getElementById('my-avatar').src = userProfile.avatar_url || '';
             document.getElementById('my-username').textContent = '@' + userProfile.username;
             
+            if (userProfile.is_verified) {
+                document.getElementById('my-verified-badge').classList.remove('hidden');
+            }
+
             const emailLower = (currentUser.email || '').toLowerCase();
             if (userProfile.role === 'admin' || emailLower === 'levshlapa919@gmail.com') {
                 document.getElementById('admin-panel-btn').classList.remove('hidden');
@@ -267,10 +280,27 @@
             setupRealtime();
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        // Автоматическое создание и добавление в официальный канал «golda messenger new»
+        async function ensureOfficialChannel() {
+            const channelName = 'golda messenger new';
+            // Проверяем, существует ли канал
+            let { data: channel } = await supabaseClient.from('groups').select('*').eq('name', channelName).single();
+            
+            if (!channel) {
+                const { data: newChan } = await supabaseClient.from('groups').insert([{ name: channelName, created_by: currentUser.id }]).select().single();
+                channel = newChan;
+            }
+
+            if (channel) {
+                // Проверяем, состоит ли юзер в канале
+                const { data: membership } = await supabaseClient.from('group_members').select('*').eq('group_id', channel.id).eq('user_id', currentUser.id).single();
+                if (!membership) {
+                    await supabaseClient.from('group_members').insert([{ group_id: channel.id, user_id: currentUser.id }]);
+                }
+            }
         }
 
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
         function toggleAuthMode() {
             isSignUpMode = !isSignUpMode;
             document.getElementById('auth-btn').textContent = isSignUpMode ? 'Зарегистрироваться' : 'Войти';
@@ -293,11 +323,13 @@
                 currentUser = data.user;
                 if (currentUser) {
                     const role = (email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
+                    const is_verified = (email.toLowerCase() === 'levshlapa919@gmail.com');
                     await supabaseClient.from('profiles').upsert([{
                         id: currentUser.id,
                         username: username,
                         email: email,
-                        role: role
+                        role: role,
+                        is_verified: is_verified
                     }]);
                 }
                 alert('Регистрация успешна!');
@@ -312,6 +344,7 @@
         async function fetchOrCreateMyProfile() {
             let { data } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
             const role = (currentUser.email.toLowerCase() === 'levshlapa919@gmail.com') ? 'admin' : 'user';
+            const is_verified = (currentUser.email.toLowerCase() === 'levshlapa919@gmail.com');
             
             if (!data) {
                 const defaultUsername = currentUser.email.split('@')[0];
@@ -319,14 +352,16 @@
                     id: currentUser.id,
                     username: defaultUsername,
                     email: currentUser.email,
-                    role: role
+                    role: role,
+                    is_verified: is_verified
                 }]).select().single();
                 userProfile = newProf;
             } else {
                 userProfile = data;
-                if (role === 'admin' && userProfile.role !== 'admin') {
-                    await supabaseClient.from('profiles').update({ role: 'admin' }).eq('id', currentUser.id);
+                if (role === 'admin' && (userProfile.role !== 'admin' || !userProfile.is_verified)) {
+                    await supabaseClient.from('profiles').update({ role: 'admin', is_verified: true }).eq('id', currentUser.id);
                     userProfile.role = 'admin';
+                    userProfile.is_verified = true;
                 }
             }
         }
@@ -346,33 +381,54 @@
             renderChatsList();
         }
 
-        // Поиск строго по юзернейму
         function renderChatsList(filter = '') {
             const listContainer = document.getElementById('chats-list');
             listContainer.innerHTML = '';
-            const query = filter.toLowerCase().replace('@', ''); // Убираем @ если пользователь ввел ее в поиск
+            const query = filter.toLowerCase().replace('@', '');
 
             allGroups.filter(g => g.name.toLowerCase().includes(query)).forEach(g => {
+                const isChannel = g.name === 'golda messenger new';
                 const div = document.createElement('div');
                 div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === g.id ? 'bg-cardBg neon-border' : ''}`;
                 div.onclick = () => {
-                    selectChat({ id: g.id, type: 'group', name: g.name, avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=' + g.name });
+                    selectChat({ id: g.id, type: 'group', name: g.name, avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=' + g.name, isChannel });
                     if (window.innerWidth < 768) toggleSidebar();
                 };
-                div.innerHTML = `<img src="https://api.dicebear.com/7.x/identicon/svg?seed=${g.name}" class="w-11 h-11 rounded-full neon-border object-cover"><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-100 truncate text-sm">${g.name}</h4><p class="text-xs text-neon">Группа</p></div>`;
+                div.innerHTML = `
+                    <div class="relative">
+                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed=${g.name}" class="w-11 h-11 rounded-full neon-border object-cover">
+                        ${isChannel ? '<span class="absolute bottom-0 right-0 w-3 h-3 bg-neon rounded-full border-2 border-panelBg"></span>' : ''}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-gray-100 truncate text-sm flex items-center space-x-1">
+                            <span>${g.name}</span>
+                            ${isChannel ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
+                        </h4>
+                        <p class="text-xs text-neon">${isChannel ? 'Официальный канал' : 'Группа'}</p>
+                    </div>`;
                 listContainer.appendChild(div);
             });
 
-            // Фильтрация пользователей по юзернейму
             allUsers.filter(u => !u.is_banned && u.username.toLowerCase().includes(query)).forEach(u => {
                 const statusColor = u.status === 'online' ? 'bg-neon' : u.status === 'in_chat' ? 'bg-yellow-400' : 'bg-gray-500';
                 const div = document.createElement('div');
                 div.className = `p-3 rounded-xl cursor-pointer flex items-center space-x-3 transition hover:bg-cardBg ${currentChat?.id === u.id ? 'bg-cardBg neon-border' : ''}`;
                 div.onclick = () => {
-                    selectChat({ id: u.id, type: 'user', name: u.username, avatar: u.avatar_url, status: u.status, bio: u.bio, email: u.email });
+                    selectChat({ id: u.id, type: 'user', name: u.username, avatar: u.avatar_url, status: u.status, bio: u.bio, email: u.email, is_verified: u.is_verified });
                     if (window.innerWidth < 768) toggleSidebar();
                 };
-                div.innerHTML = `<div class="relative"><img src="${u.avatar_url}" class="w-11 h-11 rounded-full neon-border object-cover"><span class="absolute bottom-0 right-0 w-3 h-3 ${statusColor} rounded-full border-2 border-panelBg"></span></div><div class="flex-1 min-w-0"><h4 class="font-bold text-gray-100 truncate text-sm">@${u.username}</h4><p class="text-xs text-gray-400">${u.status}</p></div>`;
+                div.innerHTML = `
+                    <div class="relative">
+                        <img src="${u.avatar_url}" class="w-11 h-11 rounded-full neon-border object-cover">
+                        <span class="absolute bottom-0 right-0 w-3 h-3 ${statusColor} rounded-full border-2 border-panelBg"></span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-1">
+                            <h4 class="font-bold text-gray-100 truncate text-sm">@${u.username}</h4>
+                            ${u.is_verified ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
+                        </div>
+                        <p class="text-xs text-gray-400">${u.status}</p>
+                    </div>`;
                 listContainer.appendChild(div);
             });
         }
@@ -385,6 +441,22 @@
             document.getElementById('active-chat-container').classList.remove('hidden');
             document.getElementById('chat-header-name').textContent = chatInfo.type === 'user' ? '@' + chatInfo.name : chatInfo.name;
             document.getElementById('chat-header-avatar').src = chatInfo.avatar;
+
+            const verifiedBadge = document.getElementById('chat-header-verified');
+            if (chatInfo.is_verified || chatInfo.name === 'golda messenger new') {
+                verifiedBadge.classList.remove('hidden');
+            } else {
+                verifiedBadge.classList.add('hidden');
+            }
+
+            // Если это канал «golda messenger new», писать туда могут только админы
+            const messageForm = document.getElementById('message-form');
+            if (chatInfo.name === 'golda messenger new' && userProfile.role !== 'admin') {
+                messageForm.style.display = 'none'; // Обычные пользователи могут только читать
+            } else {
+                messageForm.style.display = 'flex';
+            }
+
             await updateStatus('in_chat');
             loadMessages();
         }
@@ -392,7 +464,7 @@
         async function loadMessages() {
             const messagesList = document.getElementById('messages-list');
             messagesList.innerHTML = '';
-            let query = supabaseClient.from('messages').select('*, profiles(username, avatar_url)').order('created_at', { ascending: true });
+            let query = supabaseClient.from('messages').select('*, profiles(username, avatar_url, is_verified)').order('created_at', { ascending: true });
             if (currentChat.type === 'user') {
                 query = query.or(`and(sender_id.eq.${currentUser.id},receiver_id.eq.${currentChat.id}),and(sender_id.eq.${currentChat.id},receiver_id.eq.${currentUser.id})`);
             } else {
@@ -407,7 +479,15 @@
             const isMe = msg.sender_id === currentUser.id;
             const div = document.createElement('div');
             div.className = `flex ${isMe ? 'justify-end' : 'justify-start'} mb-3`;
-            div.innerHTML = `<div class="max-w-[70%] bg-${isMe ? 'cardBg border border-neon/30' : 'panelBg'} rounded-2xl p-3 shadow-md"><p class="text-sm text-gray-100">${msg.content}</p></div>`;
+            
+            const sender = msg.profiles;
+            const verifiedHtml = sender?.is_verified ? '<span class="text-blue-400 text-xs ml-1"><i class="fa-solid fa-circle-check"></i></span>' : '';
+
+            div.innerHTML = `
+                <div class="max-w-[70%] bg-${isMe ? 'cardBg border border-neon/30' : 'panelBg'} rounded-2xl p-3 shadow-md">
+                    ${!isMe && currentChat.type === 'group' ? `<div class="flex items-center mb-1"><span class="text-xs text-neon font-bold">@${sender?.username || 'admin'}</span>${verifiedHtml}</div>` : ''}
+                    <p class="text-sm text-gray-100">${msg.content}</p>
+                </div>`;
             messagesList.appendChild(div);
             messagesList.scrollTop = messagesList.scrollHeight;
         }
@@ -417,6 +497,12 @@
             const input = document.getElementById('message-input');
             const content = input.value.trim();
             if (!content || !currentChat) return;
+
+            if (currentChat.name === 'golda messenger new' && userProfile.role !== 'admin') {
+                alert('Только администратор может публиковать новости в канале!');
+                return;
+            }
+
             const payload = { sender_id: currentUser.id, content };
             if (currentChat.type === 'user') payload.receiver_id = currentChat.id;
             else payload.group_id = currentChat.id;
@@ -428,7 +514,10 @@
             if (messagesSubscription) supabaseClient.removeChannel(messagesSubscription);
             messagesSubscription = supabaseClient.channel('public:messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                 if (currentChat && (payload.new.sender_id === currentChat.id || payload.new.receiver_id === currentChat.id || payload.new.group_id === currentChat.id)) {
-                    appendMessageUI(payload.new);
+                    supabaseClient.from('profiles').select('username, avatar_url, is_verified').eq('id', payload.new.sender_id).single().then(({data}) => {
+                        payload.new.profiles = data;
+                        appendMessageUI(payload.new);
+                    });
                 }
             }).subscribe();
         }
@@ -449,7 +538,6 @@
             location.reload();
         }
 
-        // Загрузка аватарки из галереи телефона
         function handleGalleryUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -476,16 +564,10 @@
             const username = document.getElementById('edit-username').value.trim();
             const bio = document.getElementById('edit-bio').value;
             let avatar_url = userProfile.avatar_url;
-
-            if (tempNewAvatarBase64) {
-                avatar_url = tempNewAvatarBase64; // Сохраняем картинку из галереи
-            }
+            if (tempNewAvatarBase64) avatar_url = tempNewAvatarBase64;
 
             const { error } = await supabaseClient.from('profiles').update({ avatar_url, username, bio }).eq('id', currentUser.id);
-            if (error) {
-                alert('Ошибка сохранения: ' + error.message);
-                return;
-            }
+            if (error) { alert('Ошибка: ' + error.message); return; }
             alert('Сохранено!');
             closeProfileModal();
             location.reload();
@@ -497,6 +579,11 @@
             document.getElementById('tp-username').textContent = '@' + currentChat.name;
             document.getElementById('tp-email').textContent = currentChat.email || 'скрыто';
             document.getElementById('tp-bio').textContent = currentChat.bio || 'нет описания';
+            
+            const verified = document.getElementById('tp-verified');
+            if (currentChat.is_verified) verified.classList.remove('hidden');
+            else verified.classList.add('hidden');
+
             document.getElementById('target-profile-modal').classList.remove('hidden');
             document.getElementById('target-profile-modal').classList.add('flex');
         }
@@ -526,12 +613,25 @@
             }
         }
 
+        // АДМИН ПАНЕЛЬ С УПРАВЛЕНИЕМ ВЕРИФИКАЦИЕЙ
         async function openAdminPanel() {
             const { data: users } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
             const tbody = document.getElementById('admin-users-table');
             tbody.innerHTML = '';
             users.forEach(u => {
-                tbody.innerHTML += `<tr class="hover:bg-darkBg"><td class="p-3 text-neon">@${u.username}</td><td class="p-3">${u.email}</td><td class="p-3 text-xs text-gray-400">${new Date(u.created_at).toLocaleString()}</td><td class="p-3">${u.is_banned ? 'Бан' : 'Активен'}</td><td class="p-3 text-right"><button onclick="toggleBan('${u.id}', ${u.is_banned})" class="px-2 py-1 bg-red-600/20 text-red-400 rounded text-xs">${u.is_banned ? 'Разбан' : 'Бан'}</button></td></tr>`;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-darkBg">
+                        <td class="p-3 text-neon flex items-center space-x-1">
+                            <span>@${u.username}</span>
+                            ${u.is_verified ? '<span class="text-blue-400 text-xs"><i class="fa-solid fa-circle-check"></i></span>' : ''}
+                        </td>
+                        <td class="p-3">${u.email}</td>
+                        <td class="p-3">${u.is_banned ? 'Бан' : 'Активен'}</td>
+                        <td class="p-3 text-right space-x-1">
+                            <button onclick="toggleVerify('${u.id}', ${u.is_verified})" class="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs">${u.is_verified ? 'Снять галочку' : 'Верифицировать'}</button>
+                            <button onclick="toggleBan('${u.id}', ${u.is_banned})" class="px-2 py-1 bg-red-600/20 text-red-400 rounded text-xs">${u.is_banned ? 'Разбан' : 'Бан'}</button>
+                        </td>
+                    </tr>`;
             });
             document.getElementById('admin-modal').classList.remove('hidden');
             document.getElementById('admin-modal').classList.add('flex');
@@ -539,6 +639,10 @@
         function closeAdminPanel() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-modal').classList.remove('flex'); }
         async function toggleBan(uid, banned) {
             await supabaseClient.from('profiles').update({ is_banned: !banned }).eq('id', uid);
+            openAdminPanel();
+        }
+        async function toggleVerify(uid, verified) {
+            await supabaseClient.from('profiles').update({ is_verified: !verified }).eq('id', uid);
             openAdminPanel();
         }
     </script>
